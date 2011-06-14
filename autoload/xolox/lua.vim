@@ -263,24 +263,28 @@ function! xolox#lua#completefunc(init, base) " {{{1
 endfunction
 
 function! s:get_completion_prefix()
-  let prefix = strpart(getline('.'), 0, col('.') - 2)
-  return match(prefix, '\w\+\.\?\w*$')
+  return match(strpart(getline('.'), 0, col('.') - 2), '\w\+\.\?\w*$')
 endfunction
 
-function! xolox#lua#completedynamic() " {{{1
+function! xolox#lua#completedynamic(type) " {{{1
   if xolox#lua#getopt('lua_complete_dynamic', 1)
-    if s:getsynid(1) !~? 'string\|comment\|keyword'
+    if (a:type == "'" || a:type == '"') && xolox#lua#getopt('lua_complete_omni', 0)
+      if strpart(getline('.'), 0, col('.') - 1) =~ 'require[^''"]*$'
+        return a:type . "\<C-x>\<C-o>"
+      endif
+    elseif a:type == '.' && s:getsynid(1) !~? 'string\|comment\|keyword'
       let column = col('.') - 1
       " Gotcha: even though '.' is remapped it counts as a column?
       if column && getline('.')[column - 1] =~ '\w'
-        " This results in "Pattern not found" when no completion items
-        " matched, which is kind of annoying. But I don't know an alternative
-        " to :silent that can be used inside of <expr> mappings?!
-        return ".\<C-x>\<C-u>"
+        " This results in "Pattern not found" when no completion candidates
+        " are available, which is kind of annoying. But I don't know of an
+        " alternative to :silent that can be used inside of <expr>
+        " mappings?!
+        return a:type . "\<C-x>\<C-u>"
       endif
     endif
   endif
-  return '.'
+  return a:type
 endfunction
 
 function! xolox#lua#omnifunc(init, base) " {{{1
@@ -289,30 +293,48 @@ function! xolox#lua#omnifunc(init, base) " {{{1
   elseif !xolox#lua#getopt('lua_complete_omni', 0)
     throw printf("%s: omni completion needs to be explicitly enabled, see the readme!", s:script)
   endif
-  if !exists('s:omnifunc_candidates')
-    let s:omnifunc_candidates = xolox#lua#getomnicandidates()
+  if !exists('s:omnifunc_modules')
+    let s:omnifunc_modules = xolox#lua#getomnimodules()
   endif
-  if a:base == ''
-    return s:omnifunc_candidates
+  if !exists('s:omnifunc_variables')
+    let s:omnifunc_variables = xolox#lua#getomnivariables(s:omnifunc_modules)
+  endif
+  " FIXME When you type "require'" without a space in between
+  " the getline('.') call below returns an empty string?!
+  if getline('.') =~ 'require[^''"]*[''"]'
+    let pattern = xolox#misc#escape#pattern(a:base)
+    return filter(copy(s:omnifunc_modules), 'v:val =~ pattern')
+  elseif a:base == ''
+    return s:omnifunc_variables
   else
     let pattern = xolox#misc#escape#pattern(a:base)
-    return filter(copy(s:omnifunc_candidates), 'v:val =~ pattern')
+    return filter(copy(s:omnifunc_variables), 'v:val =~ pattern')
   endif
 endfunction
 
-function! xolox#lua#getomnicandidates() " {{{1
+function! xolox#lua#getomnimodules() " {{{1
   let starttime = xolox#misc#timer#start()
-  let modules = {}
+  let modulemap = {}
   let luapath = xolox#lua#getsearchpath('$LUA_PATH', 'package.path')
   let luacpath = xolox#lua#getsearchpath('$LUA_CPATH', 'package.cpath')
   for searchpath in [luapath, luacpath]
-    call s:expandsearchpath(searchpath, modules)
+    call s:expandsearchpath(searchpath, modulemap)
   endfor
-  let output = xolox#lua#dofile(s:omnicomplete_script, keys(modules))
-  let lines = split(output, "\n")
-  call sort(lines, 1)
-  call xolox#misc#timer#stop("%s: Collected omni completion candidates in %s", s:script, starttime)
-  return lines
+  let modules = keys(modulemap)
+  call sort(modules)
+  let msg = "%s: Collected %i module names for omni completion in %s"
+  call xolox#misc#timer#stop(msg, s:script, len(modules), starttime)
+  return modules
+endfunction
+
+function! xolox#lua#getomnivariables(modules) " {{{1
+  let starttime = xolox#misc#timer#start()
+  let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
+  let variables = split(output, "\n")
+  call sort(variables, 1)
+  let msg = "%s: Collected %i variables for omni completion in %s"
+  call xolox#misc#timer#stop(msg, s:script, len(variables), starttime)
+  return variables
 endfunction
 
 let s:omnicomplete_script = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin/omnicomplete.lua'

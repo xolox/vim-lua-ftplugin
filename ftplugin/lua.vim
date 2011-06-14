@@ -3,7 +3,7 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.6.1
+" Version: 0.6.2
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3625 1 :AutoInstall: lua.zip
@@ -74,9 +74,13 @@ if exists('loaded_matchit')
   call add(s:undo_ftplugin, 'unlet! b:match_ignorecase b:match_words b:match_skip')
 endif
 
-" Enable dynamic completion on typing the "." operator? {{{1
-imap <buffer> <silent> <expr> . xolox#lua#completedynamic()
+" Enable dynamic completion on typing "require('" or "variable."? {{{1
+inoremap <buffer> <silent> <expr> . xolox#lua#completedynamic('.')
 call add(s:undo_ftplugin, 'iunmap <buffer> .')
+inoremap <buffer> <silent> <expr> ' xolox#lua#completedynamic("'")
+call add(s:undo_ftplugin, "iunmap <buffer> '")
+inoremap <buffer> <silent> <expr> " xolox#lua#completedynamic('"')
+call add(s:undo_ftplugin, 'iunmap <buffer> "')
 
 " }}}1
 
