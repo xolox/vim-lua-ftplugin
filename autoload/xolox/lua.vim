@@ -18,7 +18,7 @@ endfunction
 function! xolox#lua#includeexpr(fname) " {{{1
   " Search module path for matching Lua scripts.
   let module = substitute(a:fname, '\.', '/', 'g')
-  for template in xolox#lua#getsearchpath()
+  for template in xolox#lua#getsearchpath('$LUA_PATH', 'package.path')
     let expanded = substitute(template, '?', module, 'g')
     call xolox#misc#msg#debug("%s: Expanded %s -> %s", s:script, template, expanded)
     if filereadable(expanded)
@@ -30,29 +30,33 @@ function! xolox#lua#includeexpr(fname) " {{{1
   return a:fname
 endfunction
 
-function! xolox#lua#getsearchpath() " {{{1
-  " TODO Support for Lua Interface for Vim.
-  " TODO Support for $LUA_CPATH, "package.cpath".
-  let lua_path = xolox#lua#getopt('lua_path', '')
-  if empty(lua_path)
-    let lua_path = $LUA_PATH
-    if !empty(lua_path)
-      call xolox#misc#msg#debug("%s: Got package.path from $LUA_PATH", s:script)
+function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
+  let path = ''
+  if has('lua')
+    " Try to get the search path using the Lua Interface for Vim.
+    try
+      redir => path
+      execute 'silent lua print(' . a:luavar . ')'
+      redir END
+      call xolox#misc#msg#debug("%s: Got %s from Lua Interface for Vim", s:script, a:luavar)
+    catch
+      redir END
+    endtry
+  endif
+  if empty(path)
+    let path = eval(a:envvar)
+    if !empty(path)
+      call xolox#misc#msg#debug("%s: Got %s from %s", s:script, a:luavar, a:envvar)
     else
-      let lua_path = system('lua -e "io.write(package.path)"')
-      if !empty(lua_path) && !v:shell_error
-        call xolox#misc#msg#debug("%s: Got package.path from Lua process", s:script)
-        " Remember the path so we don't have to keep executing system() above.
-        let g:lua_path = lua_path
+      let path = system('lua -e "io.write(' . a:luavar . ')"')
+      if v:shell_error
+        call xolox#misc#msg#warn("%s: Failed to get %s from external Lua interpreter: %s", s:script, a:luavar, path)
       else
-        let message = "%s: I couldn't find the module search path!"
-        let message .= " If you want to resolve Lua module names then please set the"
-        let message .= " global variable g:lua_path to the value of package.path."
-        call xolox#misc#msg#warn(message, s:script)
+        call xolox#misc#msg#debug("%s: Got %s from external Lua interpreter", s:script, a:luavar)
       endif
     endif
   endif
-  return split(lua_path, ';')
+  return split(xolox#misc#str#trim(path), ';')
 endfunction
 
 function! xolox#lua#checksyntax() " {{{1
@@ -299,7 +303,9 @@ endfunction
 function! xolox#lua#getomnicandidates() " {{{1
   let starttime = xolox#misc#timer#start()
   let modules = {}
-  for searchpath in s:getsearchpaths()
+  let luapath = xolox#lua#getsearchpath('$LUA_PATH', 'package.path')
+  let luacpath = xolox#lua#getsearchpath('$LUA_CPATH', 'package.cpath')
+  for searchpath in [luapath, luacpath]
     call s:expandsearchpath(searchpath, modules)
   endfor
   let output = xolox#lua#dofile(s:omnicomplete_script, keys(modules))
@@ -311,21 +317,9 @@ endfunction
 
 let s:omnicomplete_script = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin/omnicomplete.lua'
 
-function! s:getsearchpaths()
-  " TODO Replace with xolox#lua#getsearchpath()
-  " Get the values of "package.path" and "package.cpath".
-  let output = system('lua -e "io.write(package.path, ''\n'', package.cpath)"')
-  let lines = split(output, "\n")
-  if v:shell_error || len(lines) != 2
-    call xolox#misc#msg#warn("%s: Failed to determine Lua's search paths!", s:script)
-    return []
-  endif
-  return lines
-endfunction
-
 function! s:expandsearchpath(searchpath, modules)
   " Collect the names of all installed modules by traversing the search paths.
-  for template in split(a:searchpath, ';')
+  for template in a:searchpath
     let components = split(template, '?')
     if len(components) != 2
       let msg = "%s: Failed to parse search path entry: %s"
