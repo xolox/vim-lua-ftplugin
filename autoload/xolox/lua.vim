@@ -3,57 +3,69 @@
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-function! xolox#lua#includeexpr(fname) " {{{1
-  " Guess the Lua module search path from $LUA_PATH or "package.path".
-  if !exists('g:lua_path')
-    let g:lua_path = $LUA_PATH
-    if empty(g:lua_path)
-      let g:lua_path = system('lua -e "io.write(package.path)"')
-      if g:lua_path == '' || v:shell_error
-        let error = "Lua file type plug-in: I couldn't find the module search path!"
-        let error .= " If you want to resolve Lua module names then please set the"
-        let error .= " global variable 'lua_path' to the value of package.path."
-        echoerr error
-        return
-      endif
-    endif
+function! xolox#lua#getopt(name, default) " {{{1
+  if exists('g:' . a:name)
+    return eval('g:' . a:name)
+  elseif exists('b:' . a:name)
+    return eval('b:' . a:name)
+  else
+    return a:default
   endif
-  " Search the module path for matching Lua scripts.
+endfunction
+
+function! xolox#lua#includeexpr(fname) " {{{1
+  " Search module path for matching Lua scripts.
   let module = substitute(a:fname, '\.', '/', 'g')
-  for path in split(g:lua_path, ';')
+  for path in xolox#lua#getsearchpath()
     let path = substitute(path, '?', module, 'g')
     if filereadable(path)
       return path
     endif
   endfor
-  " Default to given filename.
+  " Default to given name.
   return a:fname
 endfunction
 
-function! xolox#lua#checksyntax() " {{{1
-  if exists('g:lua_check_syntax') && g:lua_check_syntax
-    if exists('g:lua_compiler_name') && exists('g:lua_error_format')
-      if !executable(g:lua_compiler_name)
-        let message = "Lua file type plug-in: The configured Lua compiler"
-        let message .= " doesn't seem to be available! I'm disabling"
-        let message .= " automatic syntax checking for Lua scripts."
-        let g:lua_check_syntax = 0
-        echoerr message
-      else
-        let mp_save = &makeprg
-        let efm_save = &errorformat
-        try
-          let &makeprg = g:lua_compiler_name
-          let &errorformat = g:lua_error_format
-          let winnr = winnr()
-          execute 'silent make! -p' shellescape(expand('%'))
-          cwindow
-          execute winnr . 'wincmd w'
-        finally
-          let &makeprg = mp_save
-          let &errorformat = efm_save
-        endtry
+function! xolox#lua#getsearchpath() " {{{1
+  if !exists('g:lua_path')
+    let g:lua_path = $LUA_PATH
+    if empty(g:lua_path)
+      let g:lua_path = system('lua -e "io.write(package.path)"')
+      if g:lua_path == '' || v:shell_error
+        let message = "Lua file type plug-in: I couldn't find the module search path!"
+        let message .= " If you want to resolve Lua module names then please set the"
+        let message .= " global variable g:lua_path to the value of package.path."
+        call xolox#misc#msg#warn(message)
       endif
+    endif
+  endif
+  return split(g:lua_path, ';')
+endfunction
+
+function! xolox#lua#checksyntax() " {{{1
+  if xolox#lua#getopt('lua_check_syntax', 1)
+    let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
+    let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
+    if !executable(compiler_name)
+      let message = "Lua file type plug-in: The configured Lua compiler"
+      let message .= " doesn't seem to be available! I'm disabling"
+      let message .= " automatic syntax checking for Lua scripts."
+      let g:lua_check_syntax = 0
+      call xolox#misc#msg#warn(message)
+    else
+      let mp_save = &makeprg
+      let efm_save = &errorformat
+      try
+        let &makeprg = compiler_name
+        let &errorformat = error_format
+        let winnr = winnr()
+        execute 'silent make! -p' shellescape(expand('%'))
+        cwindow
+        execute winnr . 'wincmd w'
+      finally
+        let &makeprg = mp_save
+        let &errorformat = efm_save
+      endtry
     endif
   endif
 endfunction
@@ -220,13 +232,13 @@ function! xolox#lua#completefunc(init, base) " {{{1
     return match(prefix, '\w\+\.\?\w*$')
   else
     let items = []
-    if g:lua_complete_keywords
+    if xolox#lua#getopt('lua_complete_keywords', 1)
       call extend(items, s:keywords)
     endif
-    if g:lua_complete_globals
+    if xolox#lua#getopt('lua_complete_globals', 1)
       call extend(items, s:globals)
     endif
-    if g:lua_complete_library
+    if xolox#lua#getopt('lua_complete_library', 1)
       call extend(items, s:library)
     endif
     let regex = string('\V' . escape(a:base, '\'))
@@ -235,14 +247,14 @@ function! xolox#lua#completefunc(init, base) " {{{1
 endfunction
 
 function! xolox#lua#completedynamic() " {{{1
-  if g:lua_complete_dynamic
+  if xolox#lua#getopt('lua_complete_dynamic', 1)
     if s:getsynid(1) !~? 'string\|comment\|keyword'
       let column = col('.') - 1
-      " gotcha: even though '.' is remapped it counts as a column?
+      " Gotcha: even though '.' is remapped it counts as a column?
       if column && getline('.')[column - 1] =~ '\w'
-        " this results in "Pattern not found" when no completion items matched, which is
-        " kind of annoying. But I don't know an alternative to :silent that can be used
-        " inside of <expr> mappings?!
+        " This results in "Pattern not found" when no completion items
+        " matched, which is kind of annoying. But I don't know an alternative
+        " to :silent that can be used inside of <expr> mappings?!
         return ".\<C-x>\<C-u>"
       endif
     endif

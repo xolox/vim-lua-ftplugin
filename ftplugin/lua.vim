@@ -3,7 +3,7 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.5.1
+" Version: 0.5.2
 
 " Documentation: {{{1
 "
@@ -44,40 +44,6 @@ if exists('b:did_ftplugin')
 else
   let b:did_ftplugin = 1
 endif
-
-" Define configuration defaults. {{{1
-
-if !exists('lua_check_syntax')
-  let lua_check_syntax = 1
-endif
-
-if !exists('lua_compiler_name')
-  let lua_compiler_name = 'luac'
-endif
-
-if !exists('lua_error_format')
-  let lua_error_format = 'luac: %f:%l: %m'
-endif
-
-if !exists('lua_complete_keywords')
-  let lua_complete_keywords = 1
-endif
-
-if !exists('lua_complete_globals')
-  let lua_complete_globals = 1
-endif
-
-if !exists('lua_complete_library')
-  let lua_complete_library = 1
-endif
-
-if !exists('lua_complete_dynamic')
-  let lua_complete_dynamic = 0
-endif
-
-" }}}
-
-" Enable plug-in for current buffer without reloading?
 
 " A list of commands that undo buffer local changes made below.
 let s:undo_ftplugin = []

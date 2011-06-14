@@ -8,7 +8,7 @@ URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script prints a few hundred lines of Vim script to standard output.
 These lines are used by my Lua file type plug-in for the Vim text editor to
-provide completion for Lua keywords, globals and library identifiers.
+provide completion of Lua keywords, globals and library identifiers.
 
 ]]
 
