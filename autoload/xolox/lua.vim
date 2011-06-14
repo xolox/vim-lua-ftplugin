@@ -86,7 +86,6 @@ function! xolox#lua#help() " {{{1
       call s:lookupmethod(cword, 'lrv-file:', '\v<(close|flush|lines|read|seek|setvbuf|write)>')
       call s:lookupmethod(cword, '', '\v:\w+>')
       call s:lookuptopic('lrv-' . cword)
-      call s:lookuptopic('apr-' . cword)
     catch /^done$/
       return
     endtry
@@ -94,7 +93,7 @@ function! xolox#lua#help() " {{{1
   help
 endfunction
 
-function! s:lookupmethod(cword, pattern, prefix)
+function! s:lookupmethod(cword, prefix, pattern)
   let method = matchstr(a:cword, a:pattern)
   if method != ''
     call s:lookuptopic(a:prefix . method)
@@ -106,7 +105,7 @@ function! s:lookuptopic(topic)
     " Lookup the given topic in Vim's help files.
     execute 'help' escape(a:topic, ' []*?')
     " Abuse exceptions for non local jumping.
-    throw "done"
+    throw 'done'
   catch /^Vim\%((\a\+)\)\=:E149/
     " Ignore E149: Sorry, no help for <keyword>.
     return
