@@ -6,7 +6,7 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * The ['include'][inc] option is set so that Vim follows [dofile()][dof], [loadfile()][lof] and [require()][req] calls when looking for identifiers in included files (this works together with the ['includeexpr'][inex] option)
 
- * An automatic command is installed that runs `luac -p` when you save your Lua scripts. If `luac` reports any errors they are shown in the quick-fix list and Vim jumps to the line of the first error
+ * An automatic command is installed that runs `luac -p` when you save your Lua scripts. If `luac` reports any errors they are shown in the quick-fix list and Vim jumps to the line of the first error. If `luac -p` doesn't report any errors a check for undefined global variables is performed by parsing the output of `luac -p -l`
 
  * `<F1>` on a Lua function or 'method' call will try to open the relevant documentation in the [Lua Reference for Vim][lrv]
 
@@ -41,6 +41,16 @@ This option contains the value of `package.path` as a string. You shouldn't need
 When you write a Lua script to disk the plug-in automatically runs the Lua compiler to check for syntax errors. To disable this behavior you can set this option to false (0):
 
     let g:lua_check_syntax = 0
+
+You can manually check the syntax using the `:CheckSyntax` command.
+
+### The `lua_check_globals` option
+
+When you write a Lua script to disk the plug-in automatically runs the Lua compiler to check for undefined global variables. To disable this behavior you can set this option to false (0):
+
+    let g:lua_check_globals = 0
+
+You can manually check the globals using the `:CheckGlobals` command.
 
 ### The `lua_compiler_name` option
 

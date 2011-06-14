@@ -1,9 +1,12 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 14, 2011
+" Last Change: June 15, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 let s:script = 'lua.vim'
+let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
+let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
+let s:globals_script = s:miscdir . '/globals.lua'
 
 function! xolox#lua#getopt(name, default) " {{{1
   if exists('g:' . a:name)
@@ -59,32 +62,39 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
   return split(xolox#misc#str#trim(path), ';')
 endfunction
 
-function! xolox#lua#checksyntax() " {{{1
+function! xolox#lua#autocheck() " {{{1
   if xolox#lua#getopt('lua_check_syntax', 1)
-    let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
-    let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
-    if !executable(compiler_name)
-      let message = "%s: The configured Lua compiler"
-      let message .= " doesn't seem to be available! I'm disabling"
-      let message .= " automatic syntax checking for Lua scripts."
-      let g:lua_check_syntax = 0
-      call xolox#misc#msg#warn(message, s:script)
-    else
-      let mp_save = &makeprg
-      let efm_save = &errorformat
-      try
-        let &makeprg = compiler_name
-        let &errorformat = error_format
-        let winnr = winnr()
-        execute 'silent make! -p' shellescape(expand('%'))
-        cwindow
-        execute winnr . 'wincmd w'
-        call s:highlighterrors()
-      finally
-        let &makeprg = mp_save
-        let &errorformat = efm_save
-      endtry
-    endif
+    call xolox#lua#checksyntax()
+  endif
+  if xolox#lua#getopt('lua_check_globals', 1) && empty(getqflist())
+    call xolox#lua#checkglobals(0)
+  endif
+endfunction
+
+function! xolox#lua#checksyntax() " {{{1
+  let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
+  let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
+  if !executable(compiler_name)
+    let message = "%s: The configured Lua compiler"
+    let message .= " doesn't seem to be available! I'm disabling"
+    let message .= " automatic syntax checking for Lua scripts."
+    let g:lua_check_syntax = 0
+    call xolox#misc#msg#warn(message, s:script)
+  else
+    let mp_save = &makeprg
+    let efm_save = &errorformat
+    try
+      let &makeprg = compiler_name
+      let &errorformat = error_format
+      let winnr = winnr()
+      execute 'silent make! -p' shellescape(expand('%'))
+      cwindow
+      execute winnr . 'wincmd w'
+      call s:highlighterrors()
+    finally
+      let &makeprg = mp_save
+      let &errorformat = efm_save
+    endtry
   endif
 endfunction
 
@@ -100,6 +110,13 @@ function! s:highlighterrors()
     call matchadd(hlgroup, '\%' . min([entry.lnum, line('$')]) . 'l')
     call xolox#misc#msg#warn("%s: Syntax error on line %i: %s", s:script, entry.lnum, entry.text)
   endfor
+endfunction
+
+function! xolox#lua#checkglobals(verbose) " {{{1
+  let output = xolox#lua#dofile(s:globals_script, [expand('%'), a:verbose])
+  let qflist = eval('[' . substitute(output, '\n', ',', 'g') . ']')
+  call setqflist(qflist, 'r')
+  cwindow
 endfunction
 
 function! xolox#lua#help() " {{{1
@@ -391,8 +408,6 @@ function! xolox#lua#getomnivariables(modules) " {{{1
   call xolox#misc#timer#stop(msg, s:script, len(variables), starttime)
   return variables
 endfunction
-
-let s:omnicomplete_script = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin/omnicomplete.lua'
 
 function! xolox#lua#completedynamic(type) " {{{1
   if xolox#lua#getopt('lua_complete_dynamic', 1)
