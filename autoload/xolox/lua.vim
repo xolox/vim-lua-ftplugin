@@ -1,0 +1,441 @@
+" Vim auto-load script
+" Author: Peter Odding <peter@peterodding.com>
+" Last Change: June 14, 2011
+" URL: http://peterodding.com/code/vim/lua-ftplugin
+
+function! xolox#lua#includeexpr(fname) " {{{1
+  " Guess the Lua module search path from $LUA_PATH or "package.path".
+  if !exists('g:lua_path')
+    let g:lua_path = $LUA_PATH
+    if empty(g:lua_path)
+      let g:lua_path = system('lua -e "io.write(package.path)"')
+      if g:lua_path == '' || v:shell_error
+        let error = "Lua file type plug-in: I couldn't find the module search path!"
+        let error .= " If you want to resolve Lua module names then please set the"
+        let error .= " global variable 'lua_path' to the value of package.path."
+        echoerr error
+        return
+      endif
+    endif
+  endif
+  " Search the module path for matching Lua scripts.
+  let module = substitute(a:fname, '\.', '/', 'g')
+  for path in split(g:lua_path, ';')
+    let path = substitute(path, '?', module, 'g')
+    if filereadable(path)
+      return path
+    endif
+  endfor
+  " Default to given filename.
+  return a:fname
+endfunction
+
+function! xolox#lua#checksyntax() " {{{1
+  if exists('g:lua_check_syntax') && g:lua_check_syntax
+    if exists('g:lua_compiler_name') && exists('g:lua_error_format')
+      if !executable(g:lua_compiler_name)
+        let message = "Lua file type plug-in: The configured Lua compiler"
+        let message .= " doesn't seem to be available! I'm disabling"
+        let message .= " automatic syntax checking for Lua scripts."
+        let g:lua_check_syntax = 0
+        echoerr message
+      else
+        let mp_save = &makeprg
+        let efm_save = &errorformat
+        try
+          let &makeprg = g:lua_compiler_name
+          let &errorformat = g:lua_error_format
+          let winnr = winnr()
+          execute 'silent make! -p' shellescape(expand('%'))
+          cwindow
+          execute winnr . 'wincmd w'
+        finally
+          let &makeprg = mp_save
+          let &errorformat = efm_save
+        endtry
+      endif
+    endif
+  endif
+endfunction
+
+function! xolox#lua#help() " {{{1
+  " Get the expression under the cursor.
+  let cword = ''
+  try
+    let isk_save = &isk
+    set iskeyword+=.,:
+    let cword = expand('<cword>')
+  finally
+    let &isk = isk_save
+  endtry
+  if cword != ''
+    try
+      call s:lookupmethod(cword, 'lrv-string.', '\v<(byte|char|dump|g?find|format|len|lower|g?match|rep|reverse|g?sub|upper)>')
+      call s:lookupmethod(cword, 'lrv-file:', '\v<(close|flush|lines|read|seek|setvbuf|write)>')
+      call s:lookupmethod(cword, '', '\v:\w+>')
+      call s:lookuptopic('lrv-' . cword)
+      call s:lookuptopic('apr-' . cword)
+    catch /^done$/
+      return
+    endtry
+  endif
+  help
+endfunction
+
+function! s:lookupmethod(cword, pattern, prefix)
+  let method = matchstr(a:cword, a:pattern)
+  if method != ''
+    call s:lookuptopic(a:prefix . method)
+  endif
+endfunction
+
+function! s:lookuptopic(topic)
+  try
+    " Lookup the given topic in Vim's help files.
+    execute 'help' escape(a:topic, ' []*?')
+    " Abuse exceptions for non local jumping.
+    throw "done"
+  catch /^Vim\%((\a\+)\)\=:E149/
+    " Ignore E149: Sorry, no help for <keyword>.
+    return
+  endtry
+endfunction
+
+function! xolox#lua#jumpblock(forward) " {{{1
+  let start = '\<\%(for\|function\|if\|repeat\|while\)\>'
+  let middle = '\<\%(elseif\|else\)\>'
+  let end = '\<\%(end\|until\)\>'
+  let flags = a:forward ? '' : 'b'
+  return searchpair(start, middle, end, flags, '!xolox#lua#tokeniscode()')
+endfunction
+
+function! s:getfunscope()
+  let firstpos = [0, 1, 1, 0]
+  let lastpos = getpos('$')
+  while search('\<function\>', 'bW')
+    if xolox#lua#tokeniscode()
+      let firstpos = getpos('.')
+      break
+    endif
+  endwhile
+  if xolox#lua#jumpblock(1)
+    let lastpos = getpos('.')
+  endif
+  return [firstpos, lastpos]
+endfunction
+
+function! xolox#lua#jumpthisfunc(forward) " {{{1
+  let cpos = [line('.'), col('.')]
+  let fpos = [1, 1]
+  let lpos = [line('$'), 1]
+  while search('\<function\>', a:forward ? 'W' : 'bW')
+    if xolox#lua#tokeniscode()
+      break
+    endif
+  endwhile
+  let cursorline = line('.')
+  let [firstpos, lastpos] = s:getfunscope()
+  if cursorline == (a:forward ? lastpos : firstpos)[1]
+    " make the mapping repeatable (line wise at least)
+    execute a:forward ? (lastpos[1] + 1) : (firstpos[1] - 1)
+    let [firstpos, lastpos] = s:getfunscope()
+  endif
+  call setpos('.', a:forward ? lastpos : firstpos)
+endfunction
+
+function! xolox#lua#jumpotherfunc(forward) " {{{1
+  let view = winsaveview()
+  " jump to the start/end of the function
+  call xolox#lua#jumpthisfunc(a:forward)
+  " search for the previous/next function
+  while search('\<function\>', a:forward ? 'W' : 'bW')
+    " ignore strings and comments containing 'function'
+    if xolox#lua#tokeniscode()
+      return 1
+    endif
+  endwhile
+  call winrestview(view)
+endfunction
+
+function! xolox#lua#tokeniscode() " {{{1
+  return s:getsynid(0) !~? 'string\|comment'
+endfunction
+
+function! s:getsynid(transparent)
+  let id = synID(line('.'), col('.'), 1)
+  if a:transparent
+    let id = synIDtrans(id)
+  endif
+  return synIDattr(id, 'name')
+endfunction
+
+if exists('loaded_matchit')
+
+  function! xolox#lua#matchit() " {{{1
+    let cword = expand('<cword>')
+    if cword == 'end'
+      let s = ['function', 'if', 'for', 'while']
+      let e = ['end']
+      unlet! b:match_skip
+    elseif cword =~ '^\(function\|return\|yield\)$'
+      let s = ['function']
+      let m = ['return', 'yield']
+      let e = ['end']
+      let b:match_skip = "xolox#lua#matchit_ignore('^luaCond$')"
+      let b:match_skip .= " || (expand('<cword>') == 'end' && xolox#lua#matchit_ignore('^luaStatement$'))"
+    elseif cword =~ '^\(for\|in\|while\|do\|repeat\|until\|break\)$'
+      let s = ['for', 'repeat', 'while']
+      let m = ['break']
+      let e = ['end', 'until']
+      let b:match_skip = "xolox#lua#matchit_ignore('^\\(luaCond\\|luaFunction\\)$')"
+    elseif cword =~ '\(if\|then\|elseif\|else\)$'
+      let s = ['if']
+      let m = ['elseif', 'else']
+      let e = ['end']
+      let b:match_skip = "xolox#lua#matchit_ignore('^\\(luaFunction\\|luaStatement\\)$')"
+    else
+      let s = ['for', 'function', 'if', 'repeat', 'while']
+      let m = ['break', 'elseif', 'else', 'return']
+      let e = ['eend', 'until']
+      unlet! b:match_skip
+    endif
+    let p = '\<\(' . join(s, '\|') . '\)\>'
+    if exists('m')
+      let p .=  ':\<\(' . join(m, '\|') . '\)\>'
+    endif
+    return p . ':\<\(' . join(e, '\|') . '\)\>'
+  endfunction
+
+  function! xolox#lua#matchit_ignore(ignored) " {{{1
+    let word = expand('<cword>')
+    let type = s:getsynid(0)
+    return type =~? a:ignored || type =~? 'string\|comment'
+  endfunction
+
+endif
+
+function! xolox#lua#completefunc(init, base) " {{{1
+  if a:init
+    let prefix = strpart(getline('.'), 0, col('.') - 2)
+    return match(prefix, '\w\+\.\?\w*$')
+  else
+    let items = []
+    if g:lua_complete_keywords
+      call extend(items, s:keywords)
+    endif
+    if g:lua_complete_globals
+      call extend(items, s:globals)
+    endif
+    if g:lua_complete_library
+      call extend(items, s:library)
+    endif
+    let regex = string('\V' . escape(a:base, '\'))
+    return filter(items, 'v:val.word =~ ' . regex)
+  endif
+endfunction
+
+function! xolox#lua#completedynamic() " {{{1
+  if g:lua_complete_dynamic
+    if s:getsynid(1) !~? 'string\|comment\|keyword'
+      let column = col('.') - 1
+      " gotcha: even though '.' is remapped it counts as a column?
+      if column && getline('.')[column - 1] =~ '\w'
+        " this results in "Pattern not found" when no completion items matched, which is
+        " kind of annoying. But I don't know an alternative to :silent that can be used
+        " inside of <expr> mappings?!
+        return ".\<C-x>\<C-u>"
+      endif
+    endif
+  endif
+  return '.'
+endfunction
+
+" }}}
+
+" Enable line continuation.
+let s:cpo_save = &cpo
+set cpoptions-=C
+
+let s:keywords = [
+      \ { 'word': "and", 'kind': 'k' },
+      \ { 'word': "break", 'kind': 'k' },
+      \ { 'word': "do", 'kind': 'k' },
+      \ { 'word': "else", 'kind': 'k' },
+      \ { 'word': "elseif", 'kind': 'k' },
+      \ { 'word': "end", 'kind': 'k' },
+      \ { 'word': "false", 'kind': 'k' },
+      \ { 'word': "for", 'kind': 'k' },
+      \ { 'word': "function", 'kind': 'k' },
+      \ { 'word': "if", 'kind': 'k' },
+      \ { 'word': "in", 'kind': 'k' },
+      \ { 'word': "local", 'kind': 'k' },
+      \ { 'word': "nil", 'kind': 'k' },
+      \ { 'word': "not", 'kind': 'k' },
+      \ { 'word': "or", 'kind': 'k' },
+      \ { 'word': "repeat", 'kind': 'k' },
+      \ { 'word': "return", 'kind': 'k' },
+      \ { 'word': "then", 'kind': 'k' },
+      \ { 'word': "true", 'kind': 'k' },
+      \ { 'word': "until", 'kind': 'k' },
+      \ { 'word': "while", 'kind': 'k' }]
+
+let s:globals = [
+      \ { 'word': "_G", 'kind': 'v' },
+      \ { 'word': "_VERSION", 'kind': 'v' },
+      \ { 'word': "arg", 'kind': 'v' },
+      \ { 'word': "assert()", 'kind': 'f' },
+      \ { 'word': "collectgarbage()", 'kind': 'f' },
+      \ { 'word': "coroutine", 'kind': 'v' },
+      \ { 'word': "debug", 'kind': 'v' },
+      \ { 'word': "dofile()", 'kind': 'f' },
+      \ { 'word': "error()", 'kind': 'f' },
+      \ { 'word': "gcinfo()", 'kind': 'f' },
+      \ { 'word': "getfenv()", 'kind': 'f' },
+      \ { 'word': "getmetatable()", 'kind': 'f' },
+      \ { 'word': "io", 'kind': 'v' },
+      \ { 'word': "ipairs()", 'kind': 'f' },
+      \ { 'word': "load()", 'kind': 'f' },
+      \ { 'word': "loadfile()", 'kind': 'f' },
+      \ { 'word': "loadstring()", 'kind': 'f' },
+      \ { 'word': "math", 'kind': 'v' },
+      \ { 'word': "module()", 'kind': 'f' },
+      \ { 'word': "newproxy()", 'kind': 'f' },
+      \ { 'word': "next()", 'kind': 'f' },
+      \ { 'word': "os", 'kind': 'v' },
+      \ { 'word': "package", 'kind': 'v' },
+      \ { 'word': "pairs()", 'kind': 'f' },
+      \ { 'word': "pcall()", 'kind': 'f' },
+      \ { 'word': "prettyprint()", 'kind': 'f' },
+      \ { 'word': "print()", 'kind': 'f' },
+      \ { 'word': "rawequal()", 'kind': 'f' },
+      \ { 'word': "rawget()", 'kind': 'f' },
+      \ { 'word': "rawset()", 'kind': 'f' },
+      \ { 'word': "require()", 'kind': 'f' },
+      \ { 'word': "select()", 'kind': 'f' },
+      \ { 'word': "setfenv()", 'kind': 'f' },
+      \ { 'word': "setmetatable()", 'kind': 'f' },
+      \ { 'word': "string", 'kind': 'v' },
+      \ { 'word': "table", 'kind': 'v' },
+      \ { 'word': "tonumber()", 'kind': 'f' },
+      \ { 'word': "tostring()", 'kind': 'f' },
+      \ { 'word': "type()", 'kind': 'f' },
+      \ { 'word': "unpack()", 'kind': 'f' },
+      \ { 'word': "xpcall()", 'kind': 'f' }]
+
+let s:library = [
+      \ { 'word': "coroutine.create()", 'kind': 'f' },
+      \ { 'word': "coroutine.resume()", 'kind': 'f' },
+      \ { 'word': "coroutine.running()", 'kind': 'f' },
+      \ { 'word': "coroutine.status()", 'kind': 'f' },
+      \ { 'word': "coroutine.wrap()", 'kind': 'f' },
+      \ { 'word': "coroutine.yield()", 'kind': 'f' },
+      \ { 'word': "debug.debug()", 'kind': 'f' },
+      \ { 'word': "debug.getfenv()", 'kind': 'f' },
+      \ { 'word': "debug.gethook()", 'kind': 'f' },
+      \ { 'word': "debug.getinfo()", 'kind': 'f' },
+      \ { 'word': "debug.getlocal()", 'kind': 'f' },
+      \ { 'word': "debug.getmetatable()", 'kind': 'f' },
+      \ { 'word': "debug.getregistry()", 'kind': 'f' },
+      \ { 'word': "debug.getupvalue()", 'kind': 'f' },
+      \ { 'word': "debug.setfenv()", 'kind': 'f' },
+      \ { 'word': "debug.sethook()", 'kind': 'f' },
+      \ { 'word': "debug.setlocal()", 'kind': 'f' },
+      \ { 'word': "debug.setmetatable()", 'kind': 'f' },
+      \ { 'word': "debug.setupvalue()", 'kind': 'f' },
+      \ { 'word': "debug.traceback()", 'kind': 'f' },
+      \ { 'word': "io.close()", 'kind': 'f' },
+      \ { 'word': "io.flush()", 'kind': 'f' },
+      \ { 'word': "io.input()", 'kind': 'f' },
+      \ { 'word': "io.lines()", 'kind': 'f' },
+      \ { 'word': "io.open()", 'kind': 'f' },
+      \ { 'word': "io.output()", 'kind': 'f' },
+      \ { 'word': "io.popen()", 'kind': 'f' },
+      \ { 'word': "io.read()", 'kind': 'f' },
+      \ { 'word': "io.size()", 'kind': 'f' },
+      \ { 'word': "io.stderr", 'kind': 'm' },
+      \ { 'word': "io.stdin", 'kind': 'm' },
+      \ { 'word': "io.stdout", 'kind': 'm' },
+      \ { 'word': "io.tmpfile()", 'kind': 'f' },
+      \ { 'word': "io.type()", 'kind': 'f' },
+      \ { 'word': "io.write()", 'kind': 'f' },
+      \ { 'word': "math.abs()", 'kind': 'f' },
+      \ { 'word': "math.acos()", 'kind': 'f' },
+      \ { 'word': "math.asin()", 'kind': 'f' },
+      \ { 'word': "math.atan()", 'kind': 'f' },
+      \ { 'word': "math.atan2()", 'kind': 'f' },
+      \ { 'word': "math.ceil()", 'kind': 'f' },
+      \ { 'word': "math.cos()", 'kind': 'f' },
+      \ { 'word': "math.cosh()", 'kind': 'f' },
+      \ { 'word': "math.deg()", 'kind': 'f' },
+      \ { 'word': "math.exp()", 'kind': 'f' },
+      \ { 'word': "math.floor()", 'kind': 'f' },
+      \ { 'word': "math.fmod()", 'kind': 'f' },
+      \ { 'word': "math.frexp()", 'kind': 'f' },
+      \ { 'word': "math.huge", 'kind': 'm' },
+      \ { 'word': "math.ldexp()", 'kind': 'f' },
+      \ { 'word': "math.log()", 'kind': 'f' },
+      \ { 'word': "math.log10()", 'kind': 'f' },
+      \ { 'word': "math.max()", 'kind': 'f' },
+      \ { 'word': "math.min()", 'kind': 'f' },
+      \ { 'word': "math.mod()", 'kind': 'f' },
+      \ { 'word': "math.modf()", 'kind': 'f' },
+      \ { 'word': "math.pi", 'kind': 'm' },
+      \ { 'word': "math.pow()", 'kind': 'f' },
+      \ { 'word': "math.rad()", 'kind': 'f' },
+      \ { 'word': "math.random()", 'kind': 'f' },
+      \ { 'word': "math.randomseed()", 'kind': 'f' },
+      \ { 'word': "math.sin()", 'kind': 'f' },
+      \ { 'word': "math.sinh()", 'kind': 'f' },
+      \ { 'word': "math.sqrt()", 'kind': 'f' },
+      \ { 'word': "math.tan()", 'kind': 'f' },
+      \ { 'word': "math.tanh()", 'kind': 'f' },
+      \ { 'word': "os.clock()", 'kind': 'f' },
+      \ { 'word': "os.date()", 'kind': 'f' },
+      \ { 'word': "os.difftime()", 'kind': 'f' },
+      \ { 'word': "os.execute()", 'kind': 'f' },
+      \ { 'word': "os.exit()", 'kind': 'f' },
+      \ { 'word': "os.getenv()", 'kind': 'f' },
+      \ { 'word': "os.remove()", 'kind': 'f' },
+      \ { 'word': "os.rename()", 'kind': 'f' },
+      \ { 'word': "os.setlocale()", 'kind': 'f' },
+      \ { 'word': "os.time()", 'kind': 'f' },
+      \ { 'word': "os.tmpname()", 'kind': 'f' },
+      \ { 'word': "package.config", 'kind': 'm' },
+      \ { 'word': "package.cpath", 'kind': 'm' },
+      \ { 'word': "package.loaded", 'kind': 'm' },
+      \ { 'word': "package.loaders", 'kind': 'm' },
+      \ { 'word': "package.loadlib()", 'kind': 'f' },
+      \ { 'word': "package.path", 'kind': 'm' },
+      \ { 'word': "package.preload", 'kind': 'm' },
+      \ { 'word': "package.seeall()", 'kind': 'f' },
+      \ { 'word': "string.byte()", 'kind': 'f' },
+      \ { 'word': "string.char()", 'kind': 'f' },
+      \ { 'word': "string.dump()", 'kind': 'f' },
+      \ { 'word': "string.find()", 'kind': 'f' },
+      \ { 'word': "string.format()", 'kind': 'f' },
+      \ { 'word': "string.gfind()", 'kind': 'f' },
+      \ { 'word': "string.gmatch()", 'kind': 'f' },
+      \ { 'word': "string.gsplit()", 'kind': 'f' },
+      \ { 'word': "string.gsub()", 'kind': 'f' },
+      \ { 'word': "string.len()", 'kind': 'f' },
+      \ { 'word': "string.lower()", 'kind': 'f' },
+      \ { 'word': "string.match()", 'kind': 'f' },
+      \ { 'word': "string.rep()", 'kind': 'f' },
+      \ { 'word': "string.reverse()", 'kind': 'f' },
+      \ { 'word': "string.sub()", 'kind': 'f' },
+      \ { 'word': "string.upper()", 'kind': 'f' },
+      \ { 'word': "table.concat()", 'kind': 'f' },
+      \ { 'word': "table.foreach()", 'kind': 'f' },
+      \ { 'word': "table.foreachi()", 'kind': 'f' },
+      \ { 'word': "table.getn()", 'kind': 'f' },
+      \ { 'word': "table.insert()", 'kind': 'f' },
+      \ { 'word': "table.maxn()", 'kind': 'f' },
+      \ { 'word': "table.remove()", 'kind': 'f' },
+      \ { 'word': "table.setn()", 'kind': 'f' },
+      \ { 'word': "table.sort()", 'kind': 'f' }]
+
+" Restore compatibility options.
+let &cpo = s:cpo_save
+unlet s:cpo_save
+
+" vim: ts=2 sw=2 et
