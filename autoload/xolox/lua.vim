@@ -285,7 +285,7 @@ endfunction
 function! s:addsignatures(entries)
   for entry in a:entries
     let signature = xolox#lua#getsignature(entry.word)
-    if !empty(signature)
+    if !empty(signature) && signature != entry.word
       let entry.menu = signature
     endif
   endfor
@@ -386,6 +386,7 @@ function! xolox#lua#getomnivariables(modules) " {{{1
   let starttime = xolox#misc#timer#start()
   let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
   let variables = eval('[' . substitute(output, '\_s\+', ',', 'g') . ']')
+  call sort(variables, 1)
   let msg = "%s: Collected %i variables for omni completion in %s"
   call xolox#misc#timer#stop(msg, s:script, len(variables), starttime)
   return variables
