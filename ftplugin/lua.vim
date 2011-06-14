@@ -3,7 +3,7 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.5.4
+" Version: 0.5.5
 
 if exists('b:did_ftplugin')
   finish
