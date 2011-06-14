@@ -250,20 +250,43 @@ function! xolox#lua#completefunc(init, base) " {{{1
   endif
   let items = []
   if xolox#lua#getopt('lua_complete_keywords', 1)
-    call extend(items, g:xolox#lua_complete#keywords)
+    call extend(items, g:xolox#lua_data#keywords)
   endif
   if xolox#lua#getopt('lua_complete_globals', 1)
-    call extend(items, g:xolox#lua_complete#globals)
+    call extend(items, g:xolox#lua_data#globals)
   endif
   if xolox#lua#getopt('lua_complete_library', 1)
-    call extend(items, g:xolox#lua_complete#library)
+    call extend(items, g:xolox#lua_data#library)
   endif
   let pattern = xolox#misc#escape#pattern(a:base)
-  return filter(items, 'v:val.word =~ pattern')
+  call filter(items, 'v:val.word =~ pattern')
+  return s:addsignatures(items)
 endfunction
 
 function! s:get_completion_prefix()
   return match(strpart(getline('.'), 0, col('.') - 2), '\w\+\.\?\w*$')
+endfunction
+
+function! s:addsignatures(entries)
+  for entry in a:entries
+    let signature = xolox#lua#getsignature(entry.word)
+    if !empty(signature)
+      let entry.menu = signature
+    endif
+  endfor
+  return a:entries
+endfunction
+
+function! xolox#lua#getsignature(identifier) " {{{1
+  let identifier = substitute(a:identifier, '()$', '', '')
+  let signature = get(g:xolox#lua_data#signatures, identifier, '')
+  if empty(signature)
+    let signature = get(g:xolox#lua_data#signatures, 'string.' . identifier, '')
+  endif
+  if empty(signature)
+    let signature = get(g:xolox#lua_data#signatures, 'file:' . identifier, '')
+  endif
+  return signature
 endfunction
 
 function! xolox#lua#omnifunc(init, base) " {{{1
@@ -277,6 +300,7 @@ function! xolox#lua#omnifunc(init, base) " {{{1
   endif
   if !exists('s:omnifunc_variables')
     let s:omnifunc_variables = xolox#lua#getomnivariables(s:omnifunc_modules)
+    call s:addsignatures(s:omnifunc_variables)
   endif
   " FIXME When you type "require'" without a space in between
   " the getline('.') call below returns an empty string?!
@@ -287,7 +311,7 @@ function! xolox#lua#omnifunc(init, base) " {{{1
     return s:omnifunc_variables
   else
     let pattern = xolox#misc#escape#pattern(a:base)
-    return filter(copy(s:omnifunc_variables), 'v:val =~ pattern')
+    return filter(copy(s:omnifunc_variables), 'v:val.word =~ pattern')
   endif
 endfunction
 
@@ -346,8 +370,7 @@ endfunction
 function! xolox#lua#getomnivariables(modules) " {{{1
   let starttime = xolox#misc#timer#start()
   let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
-  let variables = split(output, "\n")
-  call sort(variables, 1)
+  let variables = eval('[' . substitute(output, '\_s\+', ',', 'g') . ']')
   let msg = "%s: Collected %i variables for omni completion in %s"
   call xolox#misc#timer#stop(msg, s:script, len(variables), starttime)
   return variables
@@ -369,7 +392,11 @@ function! xolox#lua#completedynamic(type) " {{{1
         " are available, which is kind of annoying. But I don't know of an
         " alternative to :silent that can be used inside of <expr>
         " mappings?!
-        return a:type . "\<C-x>\<C-u>"
+        if xolox#lua#getopt('lua_complete_omni', 0)
+          return a:type . "\<C-x>\<C-o>"
+        else
+          return a:type . "\<C-x>\<C-u>"
+        endif
       endif
     endif
   endif
@@ -377,29 +404,21 @@ function! xolox#lua#completedynamic(type) " {{{1
 endfunction
 
 function! xolox#lua#dofile(pathname, arguments) " {{{1
-  " First try to use the Lua Interface for Vim.
-  try
-    call xolox#misc#msg#debug("%s: Trying Lua Interface for Vim ..", s:script)
+  if has('lua')
+    " Use the Lua Interface for Vim.
     redir => output
     lua arg = vim.eval('a:arguments')
     execute 'silent luafile' fnameescape(a:pathname)
     redir END
-    if !empty(output)
-      return output
-    endif
-  catch
-    redir END
-    call xolox#misc#msg#warn("%s: %s (at %s)", s:script, v:exception, v:throwpoint)
-  endtry
-  " Fall back to the command line Lua interpreter.
-  call xolox#misc#msg#debug("Falling back to external Lua interpreter ..")
-  let output = system(join(['lua', a:pathname] + a:arguments))
-  if v:shell_error
-    let msg = "%s: Failed to retrieve omni completion candidates (output: '%s')"
-    call xolox#misc#msg#warn(msg, s:script, output)
-    return ''
   else
-  return output
+    " Use the command line Lua interpreter.
+    let output = xolox#misc#str#trim(system(join(['lua', a:pathname] + a:arguments)))
+    if v:shell_error
+      let msg = "%s: Failed to retrieve omni completion candidates (output: '%s')"
+      call xolox#misc#msg#warn(msg, s:script, output)
+    endif
+  endif
+  return xolox#misc#str#trim(output)
 endfunction
 
 " vim: ts=2 sw=2 et

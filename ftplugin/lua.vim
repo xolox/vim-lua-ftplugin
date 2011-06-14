@@ -3,7 +3,7 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.6.3
+" Version: 0.6.4
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3625 1 :AutoInstall: lua.zip
@@ -81,6 +81,12 @@ inoremap <buffer> <silent> <expr> ' xolox#lua#completedynamic("'")
 call add(s:undo_ftplugin, "iunmap <buffer> '")
 inoremap <buffer> <silent> <expr> " xolox#lua#completedynamic('"')
 call add(s:undo_ftplugin, 'iunmap <buffer> "')
+
+" Enable tool tips with function signatures? {{{1
+if has('balloon_eval')
+  setlocal ballooneval balloonexpr=xolox#lua#getsignature(v:beval_text)
+  call add(s:undo_ftplugin, 'setlocal ballooneval< balloonexpr<')
+endif
 
 " }}}1
 
