@@ -79,12 +79,27 @@ function! xolox#lua#checksyntax() " {{{1
         execute 'silent make! -p' shellescape(expand('%'))
         cwindow
         execute winnr . 'wincmd w'
+        call s:highlighterrors()
       finally
         let &makeprg = mp_save
         let &errorformat = efm_save
       endtry
     endif
   endif
+endfunction
+
+function! s:highlighterrors()
+  let hlgroup = 'luaCompilerError'
+  if !hlexists(hlgroup)
+    execute 'highlight def link' hlgroup 'Error'
+  else
+    call clearmatches()
+  endif
+  let pattern = '^\%%%il.*\n\?'
+  for entry in getqflist()
+    call matchadd(hlgroup, '\%' . min([entry.lnum, line('$')]) . 'l')
+    call xolox#misc#msg#warn("%s: Syntax error on line %i: %s", s:script, entry.lnum, entry.text)
+  endfor
 endfunction
 
 function! xolox#lua#help() " {{{1
