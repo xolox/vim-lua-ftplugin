@@ -12,6 +12,8 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * The ['completefunc'][cfu] option is set to allow completion of Lua 5.1 keywords, global variables and library members using Control-X Control-U
 
+ * The ['omnifunc'][ofu] option is set to allow dynamic completion of all modules installed on the system using Control-X Control-O, however it needs to be explicitly enabled by setting the `lua_complete_omni` option because this functionality may have undesired side effects!
+
  * Several [text-objects][tob] are defined so you can jump between blocks and functions
 
  * A pretty nifty hack of the [matchit plug-in][mit] is included: When the cursor is on a `function` or `return` keyword the `%` mapping cycles between the relevant keywords (`function`, `return`, `end`), this also works for branching statements (`if`, `elseif`, `else`, `end`) and looping statements (`for`, `while`, `repeat`, `until`, `end`)
@@ -64,6 +66,19 @@ To disable completion of library functions you can set this option to false (0).
 
 When you type a dot after a word the Lua file type plug-in will automatically start completion. To disable this behavior you can set this option to false (0).
 
+### The `lua_complete_omni` option
+
+This option is disabled by default for two reasons:
+
+ * The omni completion support works by enumerating and loading all installed modules. **If module loading has side effects this can have unintended consequences!**
+ * Because all modules installed on the system are loaded, collecting the completion candidates can be slow. After the first run the completion candidates are cached so this will only bother you once (until you restart Vim).
+
+If you want to use the omni completion despite the warnings above, execute the following command:
+
+    :let g:lua_complete_omni = 1
+
+Now when you type Control-X Control-O Vim will hang for a moment, after which you should be presented with an enormous list of completion candidates :-)
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/lua-ftplugin> and <http://github.com/xolox/vim-lua-ftplugin>. If you like this plug-in please vote for it on [Vim Online][script].
@@ -85,6 +100,7 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [req]: http://www.lua.org/manual/5.1/manual.html#pdf-require
 [lrv]: http://www.vim.org/scripts/script.php?script_id=1291
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27
+[ofu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27omnifunc%27
 [tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
 [mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
 [zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
