@@ -3,7 +3,10 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.5.6
+" Version: 0.5.7
+
+" Support for automatic update using the GLVS plug-in.
+" GetLatestVimScripts: 3625 1 :AutoInstall: lua.zip
 
 if exists('b:did_ftplugin')
   finish

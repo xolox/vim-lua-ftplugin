@@ -37,7 +37,7 @@ Unzip the most recent ZIP archive [7] file inside your Vim profile directory
 (usually this is '~/.vim' on UNIX and '%USERPROFILE%\vimfiles' on Windows),
 restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
 ~\vimfiles\doc' instead on Windows). Now try it out: Edit a Lua script and try
-any the features documented above.
+any of the features documented above.
 
 ===============================================================================
                                                                    *lua-options*
@@ -116,12 +116,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/lua-ftplugin and http://github.com/xolox/vim-lua-ftplugin.
+If you like this plug-in please vote for it on Vim Online [9].
 
 ===============================================================================
                                                                    *lua-license*
 License ~
 
-This software is licensed under the MIT license [9]. Copyright 2011 Peter
+This software is licensed under the MIT license [10]. Copyright 2011 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
@@ -136,6 +137,7 @@ References ~
 [6] http://www.vim.org/scripts/script.php?script_id=1291
 [7] http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
 [8] http://lua-users.org/wiki/LuaLint
-[9] http://en.wikipedia.org/wiki/MIT_License
+[9] http://www.vim.org/scripts/script.php?script_id=3625
+[10] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help

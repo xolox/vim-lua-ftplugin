@@ -18,7 +18,7 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
 ## Installation
 
-Unzip the most recent [ZIP archive][zip] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). Now try it out: Edit a Lua script and try any the features documented above.
+Unzip the most recent [ZIP archive][zip] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). Now try it out: Edit a Lua script and try any of the features documented above.
 
 ## Options
 
@@ -66,7 +66,7 @@ When you type a dot after a word the Lua file type plug-in will automatically st
 
 ## Contact
 
-If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/lua-ftplugin> and <http://github.com/xolox/vim-lua-ftplugin>.
+If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/lua-ftplugin> and <http://github.com/xolox/vim-lua-ftplugin>. If you like this plug-in please vote for it on [Vim Online][script].
 
 ## License
 
@@ -89,3 +89,4 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
 [zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
 [ll]: http://lua-users.org/wiki/LuaLint
+[script]: http://www.vim.org/scripts/script.php?script_id=3625
