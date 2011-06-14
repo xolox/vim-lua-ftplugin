@@ -16,9 +16,53 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * A pretty nifty hack of the [matchit plug-in][mit] is included: When the cursor is on a `function` or `return` keyword the `%` mapping cycles between the relevant keywords (`function`, `return`, `end`), this also works for branching statements (`if`, `elseif`, `else`, `end`) and looping statements (`for`, `while`, `repeat`, `until`, `end`)
 
-## Install & usage
+## Installation
 
 Unzip the most recent [ZIP archive][zip] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). Now try it out: Edit a Lua script and try any the features documented above.
+
+## Options
+
+The Lua file type plug-in handles options as follows: First it looks at buffer local variables, then it looks at global variables and if neither exists a default is chosen. This means you can change how the plug-in works for individual buffers. For example to change the location of the Lua compiler used to check the syntax:
+
+    " This sets the default value for all buffers.
+    :let g:lua_compiler_name = '/usr/local/bin/luac'
+
+    " This is how you change the value for one buffer.
+    :let b:lua_compiler_name = '/usr/local/bin/lualint'
+
+### The `lua_path` option
+
+This option contains the value of `package.path` as a string. You shouldn't need to change this because the plug-in is aware of [$LUA_PATH][pp] and if that isn't set the plug-in will run a Lua interpreter to get the value of [package.path][pp].
+
+### The `lua_check_syntax` option
+
+When you write a Lua script to disk the plug-in automatically runs the Lua compiler to check for syntax errors. To disable this behavior you can set this option to false (0):
+
+    let g:lua_check_syntax = 0
+
+### The `lua_compiler_name` option
+
+The name or path of the Lua compiler used to check for syntax errors. You can set this option to run the Lua compiler from a non-standard location or to run a dedicated syntax checker like [lualint][ll].
+
+### The `lua_error_format` option
+
+If you use a dedicated syntax checker you may need to change this option to reflect the format of the messages printed by the syntax checker.
+
+### The `lua_complete_keywords` option
+
+To disable completion of keywords you can set this option to false (0).
+
+### The `lua_complete_globals` option
+
+To disable completion of global functions you can set this option to false (0).
+
+### The `lua_complete_library` option
+
+To disable completion of library functions you can set this option to false (0).
+
+### The `lua_complete_dynamic` option
+
+When you type a dot after a word the Lua file type plug-in will automatically start completion. To disable this behavior you can set this option to false (0).
 
 ## Contact
 
@@ -44,3 +88,4 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
 [mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
 [zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
+[ll]: http://lua-users.org/wiki/LuaLint

@@ -3,41 +3,7 @@
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.5.3
-
-" Documentation: {{{1
-"
-" Checking for syntax errors when saving Lua source files. {{{3
-"
-" When the Lua compiler is available Vim will use the Lua compiler's "-p"
-" option to check for syntax errors each time you save a Lua source file. If
-" "luac" is not in in your search path ($PATH) you can set the global variable
-" "lua_compiler_name" to an appropriate file path. If you want to disable the
-" syntax check then you set the global variable "lua_check_syntax" to zero:
-"
-"   let lua_check_syntax = 0
-"
-" If you want to use a different program to check for errors you may need to
-" change the error format by setting the global variable "lua_error_format".
-"
-" User completion for keywords, global variables and library members. {{{3
-"
-" This plug-in contains a list of keywords, predefined global variables and
-" library tables from Lua 5.1 to enable user completion with <C-x><C-u>. You
-" can disable completion by setting some or all of the global variables
-" "lua_complete_keywords", "lua_complete_globals" and "lua_complete_library"
-" to zero.
-" 
-" To enable automatic completion in Lua source files you can set the global
-" variable "lua_complete_dynamic" to one:
-"
-"   let lua_complete_dynamic = 1
-"
-" Vim will then start user completion when you type a dot after a word
-" character outside of strings and comments. This doesn't work quite like I
-" want it to yet which is why it's disabled by default.
-"
-" }}}1
+" Version: 0.5.4
 
 if exists('b:did_ftplugin')
   finish

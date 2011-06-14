@@ -3,6 +3,8 @@
 " Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
+let s:script = 'lua.vim'
+
 function! xolox#lua#getopt(name, default) " {{{1
   if exists('g:' . a:name)
     return eval('g:' . a:name)
@@ -16,10 +18,12 @@ endfunction
 function! xolox#lua#includeexpr(fname) " {{{1
   " Search module path for matching Lua scripts.
   let module = substitute(a:fname, '\.', '/', 'g')
-  for path in xolox#lua#getsearchpath()
-    let path = substitute(path, '?', module, 'g')
-    if filereadable(path)
-      return path
+  for template in xolox#lua#getsearchpath()
+    let expanded = substitute(template, '?', module, 'g')
+    call xolox#misc#msg#debug("%s: Expanded %s -> %s", s:script, template, expanded)
+    if filereadable(expanded)
+      call xolox#misc#msg#debug("%s: Matched existing file %s", s:script, expanded)
+      return expanded
     endif
   endfor
   " Default to given name.
@@ -27,19 +31,26 @@ function! xolox#lua#includeexpr(fname) " {{{1
 endfunction
 
 function! xolox#lua#getsearchpath() " {{{1
-  if !exists('g:lua_path')
-    let g:lua_path = $LUA_PATH
-    if empty(g:lua_path)
-      let g:lua_path = system('lua -e "io.write(package.path)"')
-      if g:lua_path == '' || v:shell_error
-        let message = "Lua file type plug-in: I couldn't find the module search path!"
+  let lua_path = xolox#lua#getopt('lua_path', '')
+  if empty(lua_path)
+    let lua_path = $LUA_PATH
+    if !empty(lua_path)
+      call xolox#misc#msg#debug("%s: Got package.path from $LUA_PATH", s:script)
+    else
+      let lua_path = system('lua -e "io.write(package.path)"')
+      if !empty(lua_path) && !v:shell_error
+        call xolox#misc#msg#debug("%s: Got package.path from Lua process", s:script)
+        " Remember the path so we don't have to keep executing system() above.
+        let g:lua_path = lua_path
+      else
+        let message = "%s: I couldn't find the module search path!"
         let message .= " If you want to resolve Lua module names then please set the"
         let message .= " global variable g:lua_path to the value of package.path."
-        call xolox#misc#msg#warn(message)
+        call xolox#misc#msg#warn(message, s:script)
       endif
     endif
   endif
-  return split(g:lua_path, ';')
+  return split(lua_path, ';')
 endfunction
 
 function! xolox#lua#checksyntax() " {{{1
@@ -47,11 +58,11 @@ function! xolox#lua#checksyntax() " {{{1
     let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
     let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
     if !executable(compiler_name)
-      let message = "Lua file type plug-in: The configured Lua compiler"
+      let message = "%s: The configured Lua compiler"
       let message .= " doesn't seem to be available! I'm disabling"
       let message .= " automatic syntax checking for Lua scripts."
       let g:lua_check_syntax = 0
-      call xolox#misc#msg#warn(message)
+      call xolox#misc#msg#warn(message, s:script)
     else
       let mp_save = &makeprg
       let efm_save = &errorformat
@@ -96,7 +107,9 @@ endfunction
 function! s:lookupmethod(cword, prefix, pattern)
   let method = matchstr(a:cword, a:pattern)
   if method != ''
-    call s:lookuptopic(a:prefix . method)
+    let identifier = a:prefix . method
+    call xolox#misc#msg#debug("%s: Translating '%s' -> '%s'", s:script, a:cword, identifier)
+    call s:lookuptopic(identifier)
   endif
 endfunction
 
