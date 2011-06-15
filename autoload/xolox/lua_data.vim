@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 14, 2011
+" Last Change: June 15, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 " This script contains static user completion data based
@@ -192,6 +192,9 @@ let g:xolox#lua_data#library = [
       \ { 'word': 'table.sort()', 'kind': 'f' } ]
 
 " Function signatures. {{{1
+" Sources:
+"  - http://www.lua.org/manual/5.1/manual.html#5
+"  - http://w3.impa.br/~diego/software/luasocket/reference.html
 
 let g:xolox#lua_data#signatures = {
       \ 'assert': 'assert(v [, message])',
@@ -318,7 +321,51 @@ let g:xolox#lua_data#signatures = {
       \ 'debug.setlocal': 'debug.setlocal([thread,] level, local, value)',
       \ 'debug.setmetatable': 'debug.setmetatable(object, table)',
       \ 'debug.setupvalue': 'debug.setupvalue(func, up, value)',
-      \ 'debug.traceback': 'debug.traceback([thread,] [message] [, level])' }
+      \ 'debug.traceback': 'debug.traceback([thread,] [message] [, level])',
+      \
+      \ 'ftp.get': 'ftp.get(url)',
+      \ 'ftp.put': 'ftp.put(url, content)',
+      \ 'http.request': 'http.request(url [, body])',
+      \ 'ltn12.filter.chain': 'ltn12.filter.chain(filter1, filter2 [, ... filterN])',
+      \ 'ltn12.filter.cycle': 'ltn12.filter.cycle(low [, ctx, extra])',
+      \ 'ltn12.pump.all': 'ltn12.pump.all(source, sink)',
+      \ 'ltn12.pump.step': 'ltn12.pump.step(source, sink)',
+      \ 'ltn12.sink.chain': 'ltn12.sink.chain(filter, sink)',
+      \ 'ltn12.sink.error': 'ltn12.sink.error(message)',
+      \ 'ltn12.sink.file': 'ltn12.sink.file(handle, message)',
+      \ 'ltn12.sink.simplify': 'ltn12.sink.simplify(sink)',
+      \ 'ltn12.sink.table': 'ltn12.sink.table([table])',
+      \ 'ltn12.source.cat': 'ltn12.source.cat(source1 [, source2, ..., sourceN])',
+      \ 'ltn12.source.chain': 'ltn12.source.chain(source, filter)',
+      \ 'ltn12.source.empty': 'ltn12.source.empty()',
+      \ 'ltn12.source.error': 'ltn12.source.error(message)',
+      \ 'ltn12.source.file': 'ltn12.source.file(handle, message)',
+      \ 'ltn12.source.simplify': 'ltn12.source.simplify(source)',
+      \ 'ltn12.source.string': 'ltn12.source.string(string)',
+      \ 'mime.decode': "mime.decode('base64' or 'quoted-printable')",
+      \ 'mime.encode': "mime.encode('base64' or 'quoted-printable' [, mode])",
+      \ 'mime.normalize': 'mime.normalize([marker])',
+      \ 'mime.wrap': "mime.wrap('base64' or 'quoted-printable' or 'text' [, length])",
+      \ 'smtp.message': 'smtp.message(mesgt)',
+      \ 'socket.bind': 'socket.bind(address, port [, backlog])',
+      \ 'socket.connect': 'socket.connect(address, port [, locaddr, locport])',
+      \ 'socket.dns.tohostname': 'socket.dns.tohostname(address)',
+      \ 'socket.dns.toip': 'socket.dns.toip(address)',
+      \ 'socket.newtry': 'socket.newtry(finalizer)',
+      \ 'socket.protect': 'socket.protect(func)',
+      \ 'socket.select': 'socket.select(recvt, sendt [, timeout])',
+      \ 'socket.sink': 'socket.sink(mode, socket)',
+      \ 'socket.skip': 'socket.skip(d [, ret1, ret2 ... retN])',
+      \ 'socket.sleep': 'socket.sleep(time)',
+      \ 'socket.source': 'socket.source(mode, socket [, length])',
+      \ 'socket.try': 'socket.try(ret1 [, ret2 ... retN])',
+      \ 'url.absolute': 'url.absolute(base, relative)',
+      \ 'url.build': 'url.build(parsed_url)',
+      \ 'url.build_path': 'url.build_path(segments, unsafe)',
+      \ 'url.escape': 'url.escape(content)',
+      \ 'url.parse': 'url.parse(url, default)',
+      \ 'url.parse_path': 'url.parse_path(path)',
+      \ 'url.unescape': 'url.unescape(content)' }
 
 " }}}
 
