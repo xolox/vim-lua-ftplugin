@@ -14,6 +14,8 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * The ['omnifunc'][ofu] option is set to allow dynamic completion of the variables defined in all modules installed on the system using Control-X Control-O, however it needs to be explicitly enabled by setting the `lua_complete_omni` option because this functionality may have undesired side effects! When you invoke omni completion after typing `require '` or `require('` you get completion of module names
 
+![Screenshot of omni completion](http://peterodding.com/code/vim/lua-ftplugin/screenshots/omni-completion.png)
+
  * Several [text-objects][tob] are defined so you can jump between blocks and functions
 
  * A pretty nifty hack of the [matchit plug-in][mit] is included: When the cursor is on a `function` or `return` keyword the `%` mapping cycles between the relevant keywords (`function`, `return`, `end`), this also works for branching statements (`if`, `elseif`, `else`, `end`) and looping statements (`for`, `while`, `repeat`, `until`, `end`)

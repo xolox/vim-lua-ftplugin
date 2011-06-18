@@ -3,7 +3,7 @@
 --[[
 
 Author: Peter Odding <peter@peterodding.com>
-Last Change: June 14, 2011
+Last Change: June 18, 2011
 URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script is executed by the Lua file type plug-in for Vim to provide
@@ -44,7 +44,16 @@ local function dump(table, path, cache)
         addmatch(path, 'f', path .. '()')
       elseif vtype ~= 'table' then
         printed = true
-        addmatch(path, 'v', nil)
+        if vtype == 'boolean' or vtype == 'number' then
+          addmatch(path, 'v', tostring(value))
+        elseif vtype == 'string' then
+          if #value > 40 then
+            value = value:sub(1, 40) .. '..'
+          end
+          addmatch(path, 'v', value)
+        else
+          addmatch(path, 'v', nil)
+        end
       else
         if vtype == 'table' and not cache[value] then
           cache[value] = true
