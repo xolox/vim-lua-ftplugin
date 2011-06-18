@@ -3,7 +3,7 @@
 " Last Change: June 18, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let s:version = '0.6.11'
+let s:version = '0.6.12'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -73,6 +73,7 @@ endfunction
 
 function! xolox#lua#checksyntax() " {{{1
   let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
+  let compiler_args = xolox#lua#getopt('lua_compiler_args', '-p')
   let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
   if !executable(compiler_name)
     let message = "lua.vim %s: The configured Lua compiler"
@@ -87,7 +88,7 @@ function! xolox#lua#checksyntax() " {{{1
       let &makeprg = compiler_name
       let &errorformat = error_format
       let winnr = winnr()
-      execute 'silent make! -p' shellescape(expand('%'))
+      execute 'silent make!' compiler_args shellescape(expand('%'))
       cwindow
       execute winnr . 'wincmd w'
       call s:highlighterrors()
