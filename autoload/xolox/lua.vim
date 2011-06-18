@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 15, 2011
+" Last Change: June 18, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 let s:script = 'lua.vim'
@@ -135,6 +135,9 @@ function! xolox#lua#help() " {{{1
       call s:lookupmethod(cword, 'lrv-file:', '\v<(close|flush|lines|read|seek|setvbuf|write)>')
       call s:lookupmethod(cword, '', '\v:\w+>')
       call s:lookuptopic('lrv-' . cword)
+      call s:lookuptopic(cword)
+      call s:lookuptopic('luarefvim.txt')
+      help
     catch /^done$/
       return
     endtry

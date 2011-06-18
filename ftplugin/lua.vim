@@ -1,9 +1,9 @@
 " Vim file type plug-in
 " Language: Lua 5.1
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 15, 2011
+" Last Change: June 18, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
-" Version: 0.6.8
+" Version: 0.6.9
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3625 1 :AutoInstall: lua.zip
