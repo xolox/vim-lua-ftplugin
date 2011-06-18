@@ -66,7 +66,7 @@ function! xolox#lua#autocheck() " {{{1
   if xolox#lua#getopt('lua_check_syntax', 1)
     call xolox#lua#checksyntax()
   endif
-  if xolox#lua#getopt('lua_check_globals', 1) && empty(getqflist())
+  if xolox#lua#getopt('lua_check_globals', 0) && empty(getqflist())
     call xolox#lua#checkglobals(0)
   endif
 endfunction
