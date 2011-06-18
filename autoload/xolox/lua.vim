@@ -288,7 +288,7 @@ endif
 
 function! xolox#lua#completefunc(init, base) " {{{1
   if a:init
-    return s:get_completion_prefix()
+    return s:getcompletionprefix()
   endif
   let items = []
   if xolox#lua#getopt('lua_complete_keywords', 1)
@@ -305,8 +305,8 @@ function! xolox#lua#completefunc(init, base) " {{{1
   return s:addsignatures(items)
 endfunction
 
-function! s:get_completion_prefix()
-  return match(strpart(getline('.'), 0, col('.') - 2), '\w\+\.\?\w*$')
+function! s:getcompletionprefix()
+  return match(strpart(getline('.'), 0, col('.') - 1), '\w\+\.\?\w*$')
 endfunction
 
 function! s:addsignatures(entries)
@@ -333,7 +333,7 @@ endfunction
 
 function! xolox#lua#omnifunc(init, base) " {{{1
   if a:init
-    return s:get_completion_prefix()
+    return s:getcompletionprefix()
   elseif !xolox#lua#getopt('lua_complete_omni', 0)
     throw printf("lua.vim %s: omni completion needs to be explicitly enabled, see the readme!", g:lua_ftplugin_version)
   endif
