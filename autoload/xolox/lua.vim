@@ -3,7 +3,7 @@
 " Last Change: June 18, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let s:script = 'lua.vim'
+let s:version = '0.6.11'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -23,9 +23,9 @@ function! xolox#lua#includeexpr(fname) " {{{1
   let module = substitute(a:fname, '\.', '/', 'g')
   for template in xolox#lua#getsearchpath('$LUA_PATH', 'package.path')
     let expanded = substitute(template, '?', module, 'g')
-    call xolox#misc#msg#debug("%s: Expanded %s -> %s", s:script, template, expanded)
+    call xolox#misc#msg#debug("lua.vim %s: Expanded %s -> %s", s:version, template, expanded)
     if filereadable(expanded)
-      call xolox#misc#msg#debug("%s: Matched existing file %s", s:script, expanded)
+      call xolox#misc#msg#debug("lua.vim %s: Matched existing file %s", s:version, expanded)
       return expanded
     endif
   endfor
@@ -41,7 +41,7 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
       redir => path
       execute 'silent lua print(' . a:luavar . ')'
       redir END
-      call xolox#misc#msg#debug("%s: Got %s from Lua Interface for Vim", s:script, a:luavar)
+      call xolox#misc#msg#debug("lua.vim %s: Got %s from Lua Interface for Vim", s:version, a:luavar)
     catch
       redir END
     endtry
@@ -49,13 +49,13 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
   if empty(path)
     let path = eval(a:envvar)
     if !empty(path)
-      call xolox#misc#msg#debug("%s: Got %s from %s", s:script, a:luavar, a:envvar)
+      call xolox#misc#msg#debug("lua.vim %s: Got %s from %s", s:version, a:luavar, a:envvar)
     else
       let path = system('lua -e "io.write(' . a:luavar . ')"')
       if v:shell_error
-        call xolox#misc#msg#warn("%s: Failed to get %s from external Lua interpreter: %s", s:script, a:luavar, path)
+        call xolox#misc#msg#warn("lua.vim %s: Failed to get %s from external Lua interpreter: %s", s:version, a:luavar, path)
       else
-        call xolox#misc#msg#debug("%s: Got %s from external Lua interpreter", s:script, a:luavar)
+        call xolox#misc#msg#debug("lua.vim %s: Got %s from external Lua interpreter", s:version, a:luavar)
       endif
     endif
   endif
@@ -75,11 +75,11 @@ function! xolox#lua#checksyntax() " {{{1
   let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
   let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
   if !executable(compiler_name)
-    let message = "%s: The configured Lua compiler"
+    let message = "lua.vim %s: The configured Lua compiler"
     let message .= " doesn't seem to be available! I'm disabling"
     let message .= " automatic syntax checking for Lua scripts."
     let g:lua_check_syntax = 0
-    call xolox#misc#msg#warn(message, s:script)
+    call xolox#misc#msg#warn(message, s:version)
   else
     let mp_save = &makeprg
     let efm_save = &errorformat
@@ -108,7 +108,7 @@ function! s:highlighterrors()
   let pattern = '^\%%%il.*\n\?'
   for entry in getqflist()
     call matchadd(hlgroup, '\%' . min([entry.lnum, line('$')]) . 'l')
-    call xolox#misc#msg#warn("%s: Syntax error on line %i: %s", s:script, entry.lnum, entry.text)
+    call xolox#misc#msg#warn("lua.vim %s: Syntax error on line %i: %s", s:version, entry.lnum, entry.text)
   endfor
 endfunction
 
@@ -149,7 +149,7 @@ function! s:lookupmethod(cword, prefix, pattern)
   let method = matchstr(a:cword, a:pattern)
   if method != ''
     let identifier = a:prefix . method
-    call xolox#misc#msg#debug("%s: Translating '%s' -> '%s'", s:script, a:cword, identifier)
+    call xolox#misc#msg#debug("lua.vim %s: Translating '%s' -> '%s'", s:version, a:cword, identifier)
     call s:lookuptopic(identifier)
   endif
 endfunction
@@ -328,7 +328,7 @@ function! xolox#lua#omnifunc(init, base) " {{{1
   if a:init
     return s:get_completion_prefix()
   elseif !xolox#lua#getopt('lua_complete_omni', 0)
-    throw printf("%s: omni completion needs to be explicitly enabled, see the readme!", s:script)
+    throw printf("lua.vim %s: omni completion needs to be explicitly enabled, see the readme!", s:version)
   endif
   if !exists('s:omnifunc_modules')
     let s:omnifunc_modules = xolox#lua#getomnimodules()
@@ -360,8 +360,8 @@ function! xolox#lua#getomnimodules() " {{{1
   endfor
   let modules = keys(modulemap)
   call sort(modules)
-  let msg = "%s: Collected %i module names for omni completion in %s"
-  call xolox#misc#timer#stop(msg, s:script, len(modules), starttime)
+  let msg = "lua.vim %s: Collected %i module names for omni completion in %s"
+  call xolox#misc#timer#stop(msg, s:version, len(modules), starttime)
   return modules
 endfunction
 
@@ -370,33 +370,33 @@ function! s:expandsearchpath(searchpath, modules)
   for template in a:searchpath
     let components = split(template, '?')
     if len(components) != 2
-      let msg = "%s: Failed to parse search path entry: %s"
-      call xolox#misc#msg#debug(msg, s:script, template)
+      let msg = "lua.vim %s: Failed to parse search path entry: %s"
+      call xolox#misc#msg#debug(msg, s:version, template)
       continue
     endif
     let [prefix, suffix] = components
     " XXX Never recursively search current working directory because
     " it might be arbitrarily deep, e.g. when working directory is /
     if prefix =~ '^.[\\/]$'
-      let msg = "%s: Refusing to expand dangerous search path entry: %s"
-      call xolox#misc#msg#debug(msg, s:script, template)
+      let msg = "lua.vim %s: Refusing to expand dangerous search path entry: %s"
+      call xolox#misc#msg#debug(msg, s:version, template)
       continue
     endif
     let pattern = substitute(template, '?', '**/*', 'g')
-    call xolox#misc#msg#debug("%s: Transformed %s -> %s", s:script, template, pattern)
-    let msg = "%s: Failed to convert pathname to module name, %s doesn't match! (%s: '%s', pathname: '%s')"
+    call xolox#misc#msg#debug("lua.vim %s: Transformed %s -> %s", s:version, template, pattern)
+    let msg = "lua.vim %s: Failed to convert pathname to module name, %s doesn't match! (%s: '%s', pathname: '%s')"
     for pathname in split(glob(pattern), "\n")
       if pathname[0 : len(prefix)-1] != prefix
         " Validate prefix of resulting pathname.
-        call xolox#misc#msg#warn(msg, s:script, 'prefix', 'prefix', prefix, pathname)
+        call xolox#misc#msg#warn(msg, s:version, 'prefix', 'prefix', prefix, pathname)
       elseif pathname[-len(suffix) : -1] != suffix
         " Validate suffix of resulting pathname.
-        call xolox#misc#msg#warn(msg, s:script, 'suffix', 'suffix', suffix, pathname)
+        call xolox#misc#msg#warn(msg, s:version, 'suffix', 'suffix', suffix, pathname)
       elseif pathname !~ 'test'
         let relative = pathname[len(prefix) : -len(suffix)-1]
         let modulename = substitute(relative, '[\\/]\+', '.', 'g')
         let a:modules[modulename] = 1
-        call xolox#misc#msg#debug("%s: Transformed '%s' -> '%s'", s:script, pathname, modulename)
+        call xolox#misc#msg#debug("lua.vim %s: Transformed '%s' -> '%s'", s:version, pathname, modulename)
       endif
     endfor
   endfor
@@ -407,8 +407,8 @@ function! xolox#lua#getomnivariables(modules) " {{{1
   let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
   let variables = eval('[' . substitute(output, '\_s\+', ',', 'g') . ']')
   call sort(variables, 1)
-  let msg = "%s: Collected %i variables for omni completion in %s"
-  call xolox#misc#timer#stop(msg, s:script, len(variables), starttime)
+  let msg = "lua.vim %s: Collected %i variables for omni completion in %s"
+  call xolox#misc#timer#stop(msg, s:version, len(variables), starttime)
   return variables
 endfunction
 
@@ -448,8 +448,8 @@ function! xolox#lua#dofile(pathname, arguments) " {{{1
     " Use the command line Lua interpreter.
     let output = xolox#misc#str#trim(system(join(['lua', a:pathname] + a:arguments)))
     if v:shell_error
-      let msg = "%s: Failed to retrieve omni completion candidates (output: '%s')"
-      call xolox#misc#msg#warn(msg, s:script, output)
+      let msg = "lua.vim %s: Failed to retrieve omni completion candidates (output: '%s')"
+      call xolox#misc#msg#warn(msg, s:version, output)
     endif
   endif
   return xolox#misc#str#trim(output)
