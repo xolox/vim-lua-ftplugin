@@ -3,7 +3,7 @@
 " Last Change: June 18, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let s:version = '0.6.13'
+let s:version = '0.6.14'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -299,7 +299,7 @@ function! xolox#lua#completefunc(init, base) " {{{1
   if xolox#lua#getopt('lua_complete_library', 1)
     call extend(items, g:xolox#lua_data#library)
   endif
-  let pattern = xolox#misc#escape#pattern(a:base)
+  let pattern = '^' . xolox#misc#escape#pattern(a:base)
   call filter(items, 'v:val.word =~ pattern')
   return s:addsignatures(items)
 endfunction
@@ -345,13 +345,12 @@ function! xolox#lua#omnifunc(init, base) " {{{1
   endif
   " FIXME When you type "require'" without a space in between
   " the getline('.') call below returns an empty string?!
+  let pattern = '^' . xolox#misc#escape#pattern(a:base)
   if getline('.') =~ 'require[^''"]*[''"]'
-    let pattern = xolox#misc#escape#pattern(a:base)
     return filter(copy(s:omnifunc_modules), 'v:val =~ pattern')
   elseif a:base == ''
     return s:omnifunc_variables
   else
-    let pattern = xolox#misc#escape#pattern(a:base)
     return filter(copy(s:omnifunc_variables), 'v:val.word =~ pattern')
   endif
 endfunction
