@@ -12,7 +12,7 @@ if &cp || exists('g:loaded_lua_ftplugin')
   finish
 endif
 
-let g:lua_ftplugin_version = '0.6.15'
+let g:lua_ftplugin_version = '0.6.16'
 
 " Commands to manually check for syntax errors and undefined globals.
 command! -bar LuaCheckSyntax call xolox#lua#checksyntax()
