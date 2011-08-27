@@ -1,7 +1,7 @@
 " Vim file type plug-in
 " Language: Lua 5.1
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2011
+" Last Change: August 27, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 " Support for automatic update using the GLVS plug-in.
@@ -12,7 +12,7 @@ if &cp || exists('g:loaded_lua_ftplugin')
   finish
 endif
 
-let g:lua_ftplugin_version = '0.6.17'
+let g:lua_ftplugin_version = '0.6.18'
 
 " Commands to manually check for syntax errors and undefined globals.
 command! -bar LuaCheckSyntax call xolox#lua#checksyntax()
