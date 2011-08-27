@@ -1,13 +1,13 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2011
+" Last Change: August 27, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
 
-function! xolox#lua#getopt(name, default) " {{{1
+function! xolox#misc#option#get(name, default) " {{{1
   if exists('g:' . a:name)
     return eval('g:' . a:name)
   elseif exists('b:' . a:name)
@@ -63,19 +63,19 @@ endfunction
 
 function! xolox#lua#autocheck() " {{{1
   if &filetype == 'lua'
-    if xolox#lua#getopt('lua_check_syntax', 1)
+    if xolox#misc#option#get('lua_check_syntax', 1)
       call xolox#lua#checksyntax()
     endif
-    if xolox#lua#getopt('lua_check_globals', 0) && empty(getqflist())
+    if xolox#misc#option#get('lua_check_globals', 0) && empty(getqflist())
       call xolox#lua#checkglobals(0)
     endif
   endif
 endfunction
 
 function! xolox#lua#checksyntax() " {{{1
-  let compiler_name = xolox#lua#getopt('lua_compiler_name', 'luac')
-  let compiler_args = xolox#lua#getopt('lua_compiler_args', '-p')
-  let error_format = xolox#lua#getopt('lua_error_format', 'luac: %f:%l: %m')
+  let compiler_name = xolox#misc#option#get('lua_compiler_name', 'luac')
+  let compiler_args = xolox#misc#option#get('lua_compiler_args', '-p')
+  let error_format = xolox#misc#option#get('lua_error_format', 'luac: %f:%l: %m')
   if !executable(compiler_name)
     let message = "lua.vim %s: The configured Lua compiler"
     let message .= " doesn't seem to be available! I'm disabling"
@@ -291,13 +291,13 @@ function! xolox#lua#completefunc(init, base) " {{{1
     return s:getcompletionprefix()
   endif
   let items = []
-  if xolox#lua#getopt('lua_complete_keywords', 1)
+  if xolox#misc#option#get('lua_complete_keywords', 1)
     call extend(items, g:xolox#lua_data#keywords)
   endif
-  if xolox#lua#getopt('lua_complete_globals', 1)
+  if xolox#misc#option#get('lua_complete_globals', 1)
     call extend(items, g:xolox#lua_data#globals)
   endif
-  if xolox#lua#getopt('lua_complete_library', 1)
+  if xolox#misc#option#get('lua_complete_library', 1)
     call extend(items, g:xolox#lua_data#library)
   endif
   let pattern = '^' . xolox#misc#escape#pattern(a:base)
@@ -334,7 +334,7 @@ endfunction
 function! xolox#lua#omnifunc(init, base) " {{{1
   if a:init
     return s:getcompletionprefix()
-  elseif !xolox#lua#getopt('lua_complete_omni', 0)
+  elseif !xolox#misc#option#get('lua_complete_omni', 0)
     throw printf("lua.vim %s: omni completion needs to be explicitly enabled, see the readme!", g:lua_ftplugin_version)
   endif
   if !exists('s:omnifunc_modules')
@@ -419,8 +419,8 @@ function! xolox#lua#getomnivariables(modules) " {{{1
 endfunction
 
 function! xolox#lua#completedynamic(type) " {{{1
-  if xolox#lua#getopt('lua_complete_dynamic', 1)
-    if (a:type == "'" || a:type == '"') && xolox#lua#getopt('lua_complete_omni', 0)
+  if xolox#misc#option#get('lua_complete_dynamic', 1)
+    if (a:type == "'" || a:type == '"') && xolox#misc#option#get('lua_complete_omni', 0)
       if strpart(getline('.'), 0, col('.') - 1) =~ 'require[^''"]*$'
         return a:type . "\<C-x>\<C-o>"
       endif
@@ -432,7 +432,7 @@ function! xolox#lua#completedynamic(type) " {{{1
         " are available, which is kind of annoying. But I don't know of an
         " alternative to :silent that can be used inside of <expr>
         " mappings?!
-        if xolox#lua#getopt('lua_complete_omni', 0)
+        if xolox#misc#option#get('lua_complete_omni', 0)
           return a:type . "\<C-x>\<C-o>"
         else
           return a:type . "\<C-x>\<C-u>"
