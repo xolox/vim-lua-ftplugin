@@ -3,7 +3,7 @@
 --[[
 
 Author: Peter Odding <peter@peterodding.com>
-Last Change: July 29, 2011
+Last Change: October 16, 2011
 URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script is executed by the Lua file type plug-in for Vim to provide
@@ -75,7 +75,10 @@ end
 -- Load installed modules.
 -- XXX What if module loading has side effects? It shouldn't, but still...
 for _, modulename in ipairs(arg) do
-  pcall(require, modulename)
+  local status, module = pcall(require, modulename)
+  if status and module and not _G[modulename] then
+    _G[modulename] = module
+  end
 end
 
 -- Generate completion candidates from global state.
