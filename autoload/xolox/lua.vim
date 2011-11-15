@@ -3,7 +3,7 @@
 " Last Change: November 15, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.6.26'
+let g:xolox#lua#version = '0.6.27'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -411,9 +411,12 @@ endfunction
 
 function! xolox#lua#completedynamic(type) " {{{1
   if xolox#misc#option#get('lua_complete_dynamic', 1) && s:getsynid(1) !~? 'string\|comment\|keyword'
-    if (a:type == "'" || a:type == '"') && xolox#misc#option#get('lua_complete_omni', 0)
-      if strpart(getline('.'), 0, col('.') - 1) =~ 'require\s*(\?\s*$'
+    if (a:type == "'" || a:type == '"')
+      let prefix = strpart(getline('.'), 0, col('.') - 1)
+      if xolox#misc#option#get('lua_complete_omni', 0) && prefix =~ '\<require\s*(\?\s*$'
         return a:type . "\<C-x>\<C-o>"
+      elseif prefix =~ '\<\(dofile\|loadfile\|io\.open\|io\.lines\|os\.remove\)\s*(\?\s*$'
+        return a:type . "\<C-x>\<C-f>"
       endif
     elseif a:type == '.'
       let column = col('.') - 1
