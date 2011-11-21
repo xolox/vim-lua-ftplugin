@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 15, 2011
+" Last Change: November 21, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.6.27'
+let g:xolox#lua#version = '0.6.28'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -81,7 +81,7 @@ function! xolox#lua#checksyntax() " {{{1
       let &errorformat = error_format
       let winnr = winnr()
       let filename = expand('%:t')
-      execute 'silent make!' compiler_args shellescape(expand('%'))
+      execute 'silent make!' compiler_args xolox#misc#escape#shell(expand('%'))
       cwindow
       if winnr() != winnr
         let message = ['Syntax errors reported by', compiler_name, compiler_args, filename]
