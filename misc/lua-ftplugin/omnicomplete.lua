@@ -3,7 +3,7 @@
 --[[
 
 Author: Peter Odding <peter@peterodding.com>
-Last Change: October 16, 2011
+Last Change: November 25, 2011
 URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script is executed by the Lua file type plug-in for Vim to provide
@@ -29,7 +29,7 @@ local function addmatch(word, kind, desc)
   if not desc then
     print(string.format("{'word':'%s','kind':'%s'}", word, kind))
   else
-    print(string.format("{'word':'%s','kind':'%s','menu':'%s'}", word, kind, desc))
+    print(string.format("{'word':'%s','kind':'%s','menu':'%s'}", word, kind, (desc:gsub('\n', ' '))))
   end
 end
 
