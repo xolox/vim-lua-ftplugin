@@ -3,7 +3,7 @@
 " Last Change: November 25, 2011
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.6.29'
+let g:xolox#lua#version = '0.7'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -41,12 +41,12 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
     if !empty(path)
       call xolox#misc#msg#debug("lua.vim %s: Got %s from %s", g:xolox#lua#version, a:luavar, a:envvar)
     else
-      let path = system('lua -e "io.write(' . a:luavar . ')"')
-      if v:shell_error
-        call xolox#misc#msg#warn("lua.vim %s: Failed to get %s from external Lua interpreter: %s", g:xolox#lua#version, a:luavar, path)
-      else
+      try
+        let path = xolox#misc#os#exec('lua -e "io.write(' . a:luavar . ')"')[0]
         call xolox#misc#msg#debug("lua.vim %s: Got %s from external Lua interpreter", g:xolox#lua#version, a:luavar)
-      endif
+      catch
+        call xolox#misc#msg#warn("lua.vim %s: Failed to get %s from external Lua interpreter: %s", g:xolox#lua#version, a:luavar, v:exception)
+      endtry
     endif
   endif
   return split(xolox#misc#str#trim(path), ';')
@@ -73,27 +73,45 @@ function! xolox#lua#checksyntax() " {{{1
     let message .= " automatic syntax checking for Lua scripts."
     let g:lua_check_syntax = 0
     call xolox#misc#msg#warn(message, g:xolox#lua#version)
-  else
-    let mp_save = &makeprg
-    let efm_save = &errorformat
-    try
-      let &makeprg = compiler_name
-      let &errorformat = error_format
-      let winnr = winnr()
-      let filename = expand('%:t')
-      execute 'silent make!' compiler_args xolox#misc#escape#shell(expand('%'))
-      cwindow
-      if winnr() != winnr
-        let message = ['Syntax errors reported by', compiler_name, compiler_args, filename]
-        let w:quickfix_title = join(message)
-      endif
-      execute winnr . 'wincmd w'
-      call s:highlighterrors()
-    finally
-      let &makeprg = mp_save
-      let &errorformat = efm_save
-    endtry
+    return
   endif
+  " Check for errors using my shell.vim plug-in so that executing
+  " luac.exe on Windows doesn't pop up the nasty console window.
+  let command = [compiler_name, compiler_args, xolox#misc#escape#shell(expand('%'))]
+  let lines = xolox#misc#os#exec(join(command))
+  if empty(lines)
+    " Clear location list.
+    call setloclist(winnr(), [], 'r')
+    lclose
+    return
+  endif
+  " Save the errors to a file we can load with :lgetfile.
+  let errorfile = tempname()
+  call writefile(lines, errorfile)
+  " Remember the original values of these options.
+  let mp_save = &makeprg
+  let efm_save = &errorformat
+  try
+    " Temporarily change the options.
+    let &makeprg = compiler_name
+    let &errorformat = error_format
+    let winnr = winnr()
+    let filename = expand('%:t')
+    execute 'lgetfile' fnameescape(errorfile)
+    lwindow
+    if winnr() != winnr
+      let message = ['Syntax errors reported by', compiler_name, compiler_args, filename]
+      let w:quickfix_title = join(message)
+      execute winnr . 'wincmd w'
+    endif
+    call s:highlighterrors()
+  finally
+    " Restore the options.
+    let &makeprg = mp_save
+    let &errorformat = efm_save
+    " Cleanup the file with errors.
+    call delete(errorfile)
+  endtry
 endfunction
 
 function! s:highlighterrors()
@@ -112,8 +130,7 @@ endfunction
 
 function! xolox#lua#checkglobals(verbose) " {{{1
   let output = xolox#lua#dofile(s:globals_script, [expand('%'), a:verbose])
-  let qflist = eval('[' . substitute(output, '\n', ',', 'g') . ']')
-  call setqflist(qflist, 'r')
+  call setqflist(eval('[' . join(output, ',') . ']'), 'r')
   cwindow
 endfunction
 
@@ -402,9 +419,9 @@ endfunction
 function! xolox#lua#getomnivariables(modules) " {{{1
   let starttime = xolox#misc#timer#start()
   let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
-  let variables = eval('[' . substitute(output, '\_s\+', ',', 'g') . ']')
+  let variables = eval('[' . join(output, ',') . ']')
   call sort(variables, 1)
-  let msg = "lua.vim %s: Collected %i variables for omni completion in %s"
+  let msg = "lua.vim %s: Collected %i variables for omni completion in %s."
   call xolox#misc#timer#stop(msg, g:xolox#lua#version, len(variables), starttime)
   return variables
 endfunction
@@ -453,15 +470,14 @@ function! xolox#lua#dofile(pathname, arguments) " {{{1
     lua arg = vim.eval('a:arguments')
     execute 'silent luafile' fnameescape(a:pathname)
     redir END
+    return split(output, "\n")
   else
     " Use the command line Lua interpreter.
-    let output = xolox#misc#str#trim(system(join(['lua', a:pathname] + a:arguments)))
-    if v:shell_error
-      let msg = "lua.vim %s: Failed to retrieve omni completion candidates (output: '%s')"
-      call xolox#misc#msg#warn(msg, g:xolox#lua#version, output)
-    endif
+    let qpath = xolox#misc#escape#shell(a:pathname)
+    let qargs = join(map(a:arguments, 'xolox#misc#escape#shell(v:val)'))
+    " TODO Make name of Lua executable configurable!
+    return xolox#misc#os#exec(printf('lua %s %s', qpath, qargs))
   endif
-  return xolox#misc#str#trim(output)
 endfunction
 
 " vim: ts=2 sw=2 et

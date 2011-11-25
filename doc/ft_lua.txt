@@ -50,6 +50,11 @@ restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
 ~\vimfiles\doc' instead on Windows). Now try it out: Edit a Lua script and try
 any of the features documented above.
 
+Note that on Windows a command prompt window pops up whenever Lua is run as an
+external process. If this bothers you then you can install my shell.vim [9]
+plug-in which includes a DLL [10] that works around this issue. Once you've
+installed both plug-ins it should work out of the box!
+
 ===============================================================================
                                                                 *ft_lua-options*
 Options ~
@@ -101,7 +106,7 @@ The *lua_compiler_name* option
 
 The name or path of the Lua compiler used to check for syntax errors (defaults
 to 'luac'). You can set this option to run the Lua compiler from a
-non-standard location or to run a dedicated syntax checker like lualint [9].
+non-standard location or to run a dedicated syntax checker like lualint [11].
 
 -------------------------------------------------------------------------------
 The *lua_compiler_args* option
@@ -167,13 +172,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/lua-ftplugin and http://github.com/xolox/vim-lua-ftplugin.
-If you like this plug-in please vote for it on Vim Online [10].
+If you like this plug-in please vote for it on Vim Online [12].
 
 ===============================================================================
                                                                 *ft_lua-license*
 License ~
 
-This software is licensed under the MIT license [11]. Copyright 2011 Peter
+This software is licensed under the MIT license [13]. Copyright 2011 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
@@ -188,8 +193,10 @@ References ~
 [6] http://www.vim.org/scripts/script.php?script_id=1291
 [7] http://peterodding.com/code/vim/lua-ftplugin/screenshots/omni-completion.png
 [8] http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
-[9] http://lua-users.org/wiki/LuaLint
-[10] http://www.vim.org/scripts/script.php?script_id=3625
-[11] http://en.wikipedia.org/wiki/MIT_License
+[9] http://peterodding.com/code/vim/shell/
+[10] http://en.wikipedia.org/wiki/Dynamic-link_library
+[11] http://lua-users.org/wiki/LuaLint
+[12] http://www.vim.org/scripts/script.php?script_id=3625
+[13] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help

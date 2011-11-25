@@ -24,6 +24,8 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
 Unzip the most recent [ZIP archive][zip] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). Now try it out: Edit a Lua script and try any of the features documented above.
 
+Note that on Windows a command prompt window pops up whenever Lua is run as an external process. If this bothers you then you can install my [shell.vim][shell] plug-in which includes a [DLL][dll] that works around this issue. Once you've installed both plug-ins it should work out of the box!
+
 ## Options
 
 The Lua file type plug-in handles options as follows: First it looks at buffer local variables, then it looks at global variables and if neither exists a default is chosen. This means you can change how the plug-in works for individual buffers. For example to change the location of the Lua compiler used to check the syntax:
@@ -105,20 +107,22 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 © 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
-[vim]: http://www.vim.org/
-[lua]: http://www.lua.org/
-[inex]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27includeexpr%27
-[gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
-[pp]: http://www.lua.org/manual/5.1/manual.html#pdf-package.path
-[inc]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27include%27
-[dof]: http://www.lua.org/manual/5.1/manual.html#pdf-dofile
-[lof]: http://www.lua.org/manual/5.1/manual.html#pdf-loadfile
-[req]: http://www.lua.org/manual/5.1/manual.html#pdf-require
-[lrv]: http://www.vim.org/scripts/script.php?script_id=1291
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27
-[ofu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27omnifunc%27
-[tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
-[mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
-[zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
+[dll]: http://en.wikipedia.org/wiki/Dynamic-link_library
+[dof]: http://www.lua.org/manual/5.1/manual.html#pdf-dofile
+[gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[inc]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27include%27
+[inex]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27includeexpr%27
 [ll]: http://lua-users.org/wiki/LuaLint
+[lof]: http://www.lua.org/manual/5.1/manual.html#pdf-loadfile
+[lrv]: http://www.vim.org/scripts/script.php?script_id=1291
+[lua]: http://www.lua.org/
+[mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
+[ofu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27omnifunc%27
+[pp]: http://www.lua.org/manual/5.1/manual.html#pdf-package.path
+[req]: http://www.lua.org/manual/5.1/manual.html#pdf-require
 [script]: http://www.vim.org/scripts/script.php?script_id=3625
+[shell]: http://peterodding.com/code/vim/shell/
+[tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
+[vim]: http://www.vim.org/
+[zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
