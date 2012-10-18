@@ -19,11 +19,7 @@ function! xolox#misc#os#exec(cmdline, ...)
     return call('xolox#shell#execute', [a:cmdline, 1] + a:000)
   catch /^Vim\%((\a\+)\)\=:E117/
     " Fall back to system() when we get an "unknown function" error.
-    let output = call('system', [a:cmdline] + a:000)
-    if v:shell_error
-      throw printf("os.vim %s: Command %s failed: %s", g:xolox#misc#os#version, a:cmdline, xolox#misc#str#trim(output))
-    endif
-    return split(output, "\n")
+    return split(call('system', [a:cmdline] + a:000), "\n")
   endtry
 endfunction
 
