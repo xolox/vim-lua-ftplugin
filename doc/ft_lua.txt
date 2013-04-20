@@ -1,5 +1,30 @@
 *ft_lua.txt*  Lua file type plug-in for the Vim text editor
 
+===============================================================================
+                                                               *ft_lua-contents*
+Contents ~
+
+ 1. Introduction                                           |ft_lua-introduction|
+ 2. Installation                                           |ft_lua-installation|
+ 3. Options                                                     |ft_lua-options|
+  1. The |lua_path| option
+  2. The |lua_check_syntax| option
+  3. The |lua_check_globals| option
+  4. The |lua_compiler_name| option
+  5. The |lua_compiler_args| option
+  6. The |lua_error_format| option
+  7. The |lua_complete_keywords| option
+  8. The |lua_complete_globals| option
+  9. The |lua_complete_library| option
+  10. The |lua_complete_dynamic| option
+  11. The |lua_complete_omni| option
+ 4. Contact                                                     |ft_lua-contact|
+ 5. License                                                     |ft_lua-license|
+
+===============================================================================
+                                                           *ft_lua-introduction*
+Introduction ~
+
 The Lua [1] file type plug-in for Vim makes it easier to work with Lua source
 code in Vim by providing the following features:
 
@@ -26,8 +51,8 @@ code in Vim by providing the following features:
    defined in all modules installed on the system using Control-X Control-O,
    however it needs to be explicitly enabled by setting the
    |lua_complete_omni| option because this functionality may have undesired
-   side effects! When you invoke omni completion after typing 'require '' or
-   'require('' you get completion of module names
+   side effects! When you invoke omni completion after typing 'require ' or
+   'require(' you get completion of module names
 
     Screenshot of omni completion, see reference [7]
 
