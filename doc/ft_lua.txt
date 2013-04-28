@@ -203,7 +203,7 @@ If you like this plug-in please vote for it on Vim Online [12].
                                                                 *ft_lua-license*
 License ~
 
-This software is licensed under the MIT license [13]. Copyright 2011 Peter
+This software is licensed under the MIT license [13]. Copyright 2013 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
