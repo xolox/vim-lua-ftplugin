@@ -74,7 +74,7 @@ end
 
 -- Load installed modules.
 -- XXX What if module loading has side effects? It shouldn't, but still...
-for _, modulename in ipairs(arg) do
+for _, modulename in (type(arg) == 'table' and ipairs(arg) or arg()) do
   local status, module = pcall(require, modulename)
   if status and module and not _G[modulename] then
     _G[modulename] = module
