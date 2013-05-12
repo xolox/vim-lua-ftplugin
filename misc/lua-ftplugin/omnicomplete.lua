@@ -29,7 +29,12 @@ local function addmatch(word, kind, desc)
   if not desc then
     print(string.format("{'word':'%s','kind':'%s'}", word, kind))
   else
-    print(string.format("{'word':'%s','kind':'%s','menu':'%s'}", word, kind, (desc:gsub('\n', ' '))))
+    -- Make sure we generate valid Vim script expressions (this is probably
+    -- still not right).
+    desc = desc:gsub('\n', '\\n')
+               :gsub('\r', '\\r')
+               :gsub("'", "''")
+    print(string.format("{'word':'%s','kind':'%s','menu':'%s'}", word, kind, desc))
   end
 end
 
