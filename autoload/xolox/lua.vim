@@ -1,14 +1,14 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 12, 2013
+" Last Change: May 13, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.4'
+let g:xolox#lua#version = '0.7.5'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
 
-call xolox#misc#compat#check('lua-ftplugin', 2)
+call xolox#misc#compat#check('lua-ftplugin', 3)
 
 function! xolox#lua#includeexpr(fname) " {{{1
   " Search module path for matching Lua scripts.
@@ -44,7 +44,7 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
       call xolox#misc#msg#debug("lua.vim %s: Got %s from %s", g:xolox#lua#version, a:luavar, a:envvar)
     else
       try
-        let path = xolox#misc#os#exec('lua -e "io.write(' . a:luavar . ')"')[0]
+        let path = xolox#misc#os#exec({'command': 'lua -e "io.write(' . a:luavar . ')"'})['stdout'][0]
         call xolox#misc#msg#debug("lua.vim %s: Got %s from external Lua interpreter", g:xolox#lua#version, a:luavar)
       catch
         call xolox#misc#msg#warn("lua.vim %s: Failed to get %s from external Lua interpreter: %s", g:xolox#lua#version, a:luavar, v:exception)
@@ -80,8 +80,8 @@ function! xolox#lua#checksyntax() " {{{1
   " Check for errors using my shell.vim plug-in so that executing
   " luac.exe on Windows doesn't pop up the nasty console window.
   let command = [compiler_name, compiler_args, xolox#misc#escape#shell(expand('%'))]
-  let lines = xolox#misc#os#exec(join(command))
-  if empty(lines)
+  let output = xolox#misc#os#exec({'command': join(command) . ' 2>&1', 'check': 0})['stdout']
+  if empty(output)
     " Clear location list.
     call setloclist(winnr(), [], 'r')
     lclose
@@ -89,7 +89,7 @@ function! xolox#lua#checksyntax() " {{{1
   endif
   " Save the errors to a file we can load with :lgetfile.
   let errorfile = tempname()
-  call writefile(lines, errorfile)
+  call writefile(output, errorfile)
   " Remember the original values of these options.
   let mp_save = &makeprg
   let efm_save = &errorformat
@@ -478,7 +478,7 @@ function! xolox#lua#dofile(pathname, arguments) " {{{1
     let qpath = xolox#misc#escape#shell(a:pathname)
     let qargs = join(map(a:arguments, 'xolox#misc#escape#shell(v:val)'))
     " TODO Make name of Lua executable configurable!
-    return xolox#misc#os#exec(printf('lua %s %s', qpath, qargs))
+    return xolox#misc#os#exec({'command': printf('lua %s %s', qpath, qargs)})['stdout']
   endif
 endfunction
 
