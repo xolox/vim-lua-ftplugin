@@ -18,6 +18,7 @@ Contents ~
   9. The |lua_complete_library| option
   10. The |lua_complete_dynamic| option
   11. The |lua_complete_omni| option
+  12. The |lua_define_completion_mappings| option
  4. Contact                                                     |ft_lua-contact|
  5. License                                                     |ft_lua-license|
 
@@ -189,6 +190,15 @@ following command:
 
 Now when you type Control-X Control-O Vim will hang for a moment, after which
 you should be presented with an enormous list of completion candidates :-)
+
+-------------------------------------------------------------------------------
+The *lua_define_completion_mappings* option
+
+By default the Lua file type plug-in defines insert mode mappings so that the
+plug-in is called whenever you type a single quote, double quote or a dot
+inside a Lua buffer. This enables context sensitive completion. If you don't
+like these mappings you can set this option to zero (false). In that case the
+mappings will not be defined.
 
 ===============================================================================
                                                                 *ft_lua-contact*

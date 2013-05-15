@@ -97,6 +97,11 @@ If you want to use the omni completion despite the warnings above, execute the f
 
 Now when you type Control-X Control-O Vim will hang for a moment, after which you should be presented with an enormous list of completion candidates :-)
 
+
+### The `lua_define_completion_mappings` option
+
+By default the Lua file type plug-in defines insert mode mappings so that the plug-in is called whenever you type a single quote, double quote or a dot inside a Lua buffer. This enables context sensitive completion. If you don't like these mappings you can set this option to zero (false). In that case the mappings will not be defined.
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/lua-ftplugin> and <http://github.com/xolox/vim-lua-ftplugin>. If you like this plug-in please vote for it on [Vim Online][script].

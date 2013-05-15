@@ -1,7 +1,7 @@
 " Vim file type plug-in
 " Language: Lua 5.1
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2011
+" Last Change: May 15, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 if exists('b:did_ftplugin')
@@ -73,12 +73,14 @@ if exists('loaded_matchit')
 endif
 
 " Enable dynamic completion on typing "require('" or "variable."? {{{1
-inoremap <buffer> <silent> <expr> . xolox#lua#completedynamic('.')
-call add(s:undo_ftplugin, 'iunmap <buffer> .')
-inoremap <buffer> <silent> <expr> ' xolox#lua#completedynamic("'")
-call add(s:undo_ftplugin, "iunmap <buffer> '")
-inoremap <buffer> <silent> <expr> " xolox#lua#completedynamic('"')
-call add(s:undo_ftplugin, 'iunmap <buffer> "')
+if xolox#misc#option#get('lua_define_completion_mappings', 1)
+  inoremap <buffer> <silent> <expr> . xolox#lua#completedynamic('.')
+  call add(s:undo_ftplugin, 'iunmap <buffer> .')
+  inoremap <buffer> <silent> <expr> ' xolox#lua#completedynamic("'")
+  call add(s:undo_ftplugin, "iunmap <buffer> '")
+  inoremap <buffer> <silent> <expr> " xolox#lua#completedynamic('"')
+  call add(s:undo_ftplugin, 'iunmap <buffer> "')
+endif
 
 " Enable tool tips with function signatures? {{{1
 if has('balloon_eval')
