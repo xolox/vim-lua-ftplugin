@@ -3,12 +3,12 @@
 " Last Change: May 20, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.7'
+let g:xolox#lua#version = '0.7.8'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
 
-call xolox#misc#compat#check('lua.vim', g:xolox#lua#version, 7)
+call xolox#misc#compat#check('lua.vim', g:xolox#lua#version, 9)
 
 function! xolox#lua#includeexpr(fname) " {{{1
   " Search module path for matching Lua scripts.
