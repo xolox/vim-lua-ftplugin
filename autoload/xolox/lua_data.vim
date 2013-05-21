@@ -1,3 +1,9 @@
+" This Vim script was modified by a Python script that I use to manage the
+" inclusion of miscellaneous functions in the plug-ins that I publish to Vim
+" Online and GitHub. Please don't edit this file, instead make your changes on
+" the 'dev' branch of the git repository (thanks!). This file was generated on
+" May 21, 2013 at 02:53.
+
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: June 15, 2011
