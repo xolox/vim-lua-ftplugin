@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 21, 2013
+" Last Change: May 25, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.9'
+let g:xolox#lua#version = '0.7.10'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'

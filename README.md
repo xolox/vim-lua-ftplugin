@@ -22,7 +22,13 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
 ## Installation
 
-Unzip the most recent [ZIP archive][zip] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). Now try it out: Edit a Lua script and try any of the features documented above.
+*Please note that the vim-lua-ftplugin plug-in requires my vim-misc plug-in which is separately distributed.*
+
+Unzip the most recent ZIP archives of the [vim-lua-ftplugin] [download-lua-ftplugin] and [vim-misc] [download-misc] plug-ins inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows).
+
+If you prefer you can also use [Pathogen] [pathogen], [Vundle] [vundle] or a similar tool to install & update the [vim-lua-ftplugin] [github-lua-ftplugin] and [vim-misc] [github-misc] plug-ins using a local clone of the git repository.
+
+Now try it out: Edit a Lua script and try any of the features documented above.
 
 Note that on Windows a command prompt window pops up whenever Lua is run as an external process. If this bothers you then you can install my [shell.vim][shell] plug-in which includes a [DLL][dll] that works around this issue. Once you've installed both plug-ins it should work out of the box!
 
@@ -115,7 +121,11 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27
 [dll]: http://en.wikipedia.org/wiki/Dynamic-link_library
 [dof]: http://www.lua.org/manual/5.1/manual.html#pdf-dofile
+[download-lua-ftplugin]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
+[download-misc]: http://peterodding.com/code/vim/downloads/misc.zip
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[github-lua-ftplugin]: http://github.com/xolox/vim-lua-ftplugin
+[github-misc]: http://github.com/xolox/vim-misc
 [inc]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27include%27
 [inex]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27includeexpr%27
 [ll]: http://lua-users.org/wiki/LuaLint
@@ -124,10 +134,11 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [lua]: http://www.lua.org/
 [mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
 [ofu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27omnifunc%27
+[pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
 [pp]: http://www.lua.org/manual/5.1/manual.html#pdf-package.path
 [req]: http://www.lua.org/manual/5.1/manual.html#pdf-require
 [script]: http://www.vim.org/scripts/script.php?script_id=3625
 [shell]: http://peterodding.com/code/vim/shell/
 [tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
 [vim]: http://www.vim.org/
-[zip]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
+[vundle]: https://github.com/gmarik/vundle
