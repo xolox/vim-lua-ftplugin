@@ -220,7 +220,7 @@ lua-ftplugin. If you like this plug-in please vote for it on Vim Online [17].
                                                                *ft_lua-license*
 License ~
 
-This software is licensed under the MIT license [18]. © 2013 Peter Odding
+This software is licensed under the MIT license [18]. ÂŠ 2013 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================

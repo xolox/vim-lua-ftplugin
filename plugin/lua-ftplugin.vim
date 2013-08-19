@@ -1,7 +1,7 @@
 " Vim file type plug-in
 " Language: Lua 5.1
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: August 27, 2011
+" Last Change: August 19, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 " Support for automatic update using the GLVS plug-in.
@@ -11,6 +11,19 @@
 if &cp || exists('g:loaded_lua_ftplugin')
   finish
 endif
+
+" Make sure vim-misc is installed.
+try
+  " The point of this code is to do something completely innocent while making
+  " sure the vim-misc plug-in is installed. We specifically don't use Vim's
+  " exists() function because it doesn't load auto-load scripts that haven't
+  " already been loaded yet (last tested on Vim 7.3).
+  call type(g:xolox#misc#version)
+catch
+  echomsg "Warning: The vim-lua-ftplugin plug-in requires the vim-misc plug-in which seems not to be installed! For more information please review the installation instructions in the readme (also available on the homepage and on GitHub). The vim-lua-ftplugin plug-in will now be disabled."
+  let g:loaded_lua_ftplugin = 1
+  finish
+endtry
 
 " Commands to manually check for syntax errors and undefined globals.
 command! -bar LuaCheckSyntax call xolox#lua#checksyntax()
