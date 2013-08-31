@@ -1,7 +1,7 @@
 " Vim file type plug-in
 " Language: Lua 5.1
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 15, 2013
+" Last Change: August 31, 2013
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 if exists('b:did_ftplugin')
@@ -24,12 +24,16 @@ let &l:includeexpr = 'xolox#lua#includeexpr(v:fname)'
 call add(s:undo_ftplugin, 'setlocal inc< inex<')
 
 " Enable completion of Lua keywords, globals and library members. {{{1
-setlocal completefunc=xolox#lua#completefunc
-call add(s:undo_ftplugin, 'setlocal completefunc<')
+if xolox#misc#option#get('lua_define_completefunc', 1)
+  setlocal completefunc=xolox#lua#completefunc
+  call add(s:undo_ftplugin, 'setlocal completefunc<')
+endif
 
 " Enable dynamic completion by searching "package.path" and "package.cpath". {{{1
-setlocal omnifunc=xolox#lua#omnifunc
-call add(s:undo_ftplugin, 'setlocal omnifunc<')
+if xolox#misc#option#get('lua_define_omnifunc', 1)
+  setlocal omnifunc=xolox#lua#omnifunc
+  call add(s:undo_ftplugin, 'setlocal omnifunc<')
+endif
 
 " Set a filename filter for the Windows file open/save dialogs. {{{1
 if has('gui_win32') && !exists('b:browsefilter')

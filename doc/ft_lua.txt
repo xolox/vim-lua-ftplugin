@@ -17,7 +17,9 @@ Contents ~
   9. The |lua_complete_library| option
   10. The |lua_complete_dynamic| option
   11. The |lua_complete_omni| option
-  12. The |lua_define_completion_mappings| option
+  12. The |lua_define_completefunc| option
+  13. The |lua_define_omnifunc| option
+  14. The |lua_define_completion_mappings| option
  4. Contact                                                    |ft_lua-contact|
  5. License                                                    |ft_lua-license|
  6. References                                              |ft_lua-references|
@@ -198,6 +200,26 @@ following command:
 Now when you type Control-X Control-O Vim will hang for a moment, after which
 you should be presented with an enormous list of completion candidates :-)
 
+-------------------------------------------------------------------------------
+The *lua_define_completefunc* option
+
+By default the Lua file type plug-in sets the |'completefunc'| option so that
+Vim can complete Lua keywords, global variables and library members using
+Control-X Control-U. If you don't want the 'completefunc' option to be changed
+by the plug-in, you can set this option to zero (false) in your |vimrc| script:
+>
+  :let g:lua_define_completefunc = 0
+<
+-------------------------------------------------------------------------------
+The *lua_define_omnifunc* option
+
+By default the Lua file type plug-in sets the |'omnifunc'| option so that Vim
+can complete the names of all Lua modules installed on the local system. If you
+don't want the 'omnifunc' option to be changed by the plug-in, you can set this
+option to zero (false) in your |vimrc| script:
+>
+  :let g:lua_define_omnifunc = 0
+<
 -------------------------------------------------------------------------------
 The *lua_define_completion_mappings* option
 

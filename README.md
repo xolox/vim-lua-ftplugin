@@ -103,6 +103,17 @@ If you want to use the omni completion despite the warnings above, execute the f
 
 Now when you type Control-X Control-O Vim will hang for a moment, after which you should be presented with an enormous list of completion candidates :-)
 
+### The `lua_define_completefunc` option
+
+By default the Lua file type plug-in sets the ['completefunc'] [] option so that Vim can complete Lua keywords, global variables and library members using Control-X Control-U. If you don't want the 'completefunc' option to be changed by the plug-in, you can set this option to zero (false) in your [vimrc script] [vimrc]:
+
+    :let g:lua_define_completefunc = 0
+
+### The `lua_define_omnifunc` option
+
+By default the Lua file type plug-in sets the ['omnifunc'] [] option so that Vim can complete the names of all Lua modules installed on the local system. If you don't want the 'omnifunc' option to be changed by the plug-in, you can set this option to zero (false) in your [vimrc script] [vimrc]:
+
+    :let g:lua_define_omnifunc = 0
 
 ### The `lua_define_completion_mappings` option
 
@@ -118,6 +129,8 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 © 2013 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
+['completefunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'completefunc'
+['omnifunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'omnifunc'
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27
 [dll]: http://en.wikipedia.org/wiki/Dynamic-link_library
 [dof]: http://www.lua.org/manual/5.1/manual.html#pdf-dofile
@@ -141,4 +154,5 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [shell]: http://peterodding.com/code/vim/shell/
 [tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects
 [vim]: http://www.vim.org/
+[vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
 [vundle]: https://github.com/gmarik/vundle
