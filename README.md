@@ -8,7 +8,7 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * An automatic command is installed that runs `luac -p` when you save your Lua scripts. If `luac` reports any errors they are shown in the quick-fix list and Vim jumps to the line of the first error. If `luac -p` doesn't report any errors a check for undefined global variables is performed by parsing the output of `luac -p -l`
 
- * `<F1>` on a Lua function or 'method' call will try to open the relevant documentation in the [Lua Reference for Vim][lrv]
+ * `K` (normal mode) and `<F1>` (insert mode) on a Lua function or 'method' call will try to open the relevant documentation in the [Lua Reference for Vim][lrv]
 
  * The ['completefunc'][cfu] option is set to allow completion of Lua 5.1 keywords, global variables and library members using Control-X Control-U
 

@@ -44,8 +44,8 @@ code in Vim by providing the following features:
   report any errors a check for undefined global variables is performed by
   parsing the output of 'luac -p -l'
 
-- '<F1>' on a Lua function or 'method' call will try to open the relevant
-  documentation in the Lua Reference for Vim [6]
+- 'K' (normal mode) and 'F1' (insert mode) on a Lua function or 'method' call
+  will try to open the relevant documentation in the Lua Reference for Vim [6]
 
 - The |'completefunc'| option is set to allow completion of Lua 5.1 keywords,
   global variables and library members using Control-X Control-U

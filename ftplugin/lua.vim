@@ -51,9 +51,9 @@ call add(s:undo_ftplugin, 'delcommand CheckGlobals')
 
 " Define mappings for context-sensitive help using Lua Reference for Vim. {{{1
 imap <buffer> <F1> <C-o>:call xolox#lua#help()<Cr>
-nmap <buffer> <F1>      :call xolox#lua#help()<Cr>
+nmap <buffer> K         :call xolox#lua#help()<Cr>
 call add(s:undo_ftplugin, 'iunmap <buffer> <F1>')
-call add(s:undo_ftplugin, 'nunmap <buffer> <F1>')
+call add(s:undo_ftplugin, 'nunmap <buffer> K')
 
 " Define custom text objects to navigate Lua source code. {{{1
 noremap <buffer> <silent> [{ m':call xolox#lua#jumpblock(0)<Cr>
