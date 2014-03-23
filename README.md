@@ -103,6 +103,19 @@ If you want to use the omni completion despite the warnings above, execute the f
 
 Now when you type Control-X Control-O Vim will hang for a moment, after which you should be presented with an enormous list of completion candidates :-)
 
+### The `lua_omni_module_blacklist` option
+
+Setting this option to a list of Lua module names causes them not to be loaded, i.e., blacklisted, when aggregating candidates for omni completion. 
+Loading particular Lua modules having side effects can be avoided with this option. In addition, deliberately excluding further Lua modules results in a faster omni completion candidates loading.
+
+The list of Lua modules to be inspected for omni completion candidates is regex-filtered by this option's entries enclosed in ``^`` and ``$``. For example, defining
+
+    :let g:lua_omni_module_blacklist = ['pl\.strict', 'lgi\..*']
+
+prevents the module ``pl.strict`` and all modules with the prefix ``lgi.`` from being loaded.
+
+The list of Lua modules loaded while gathering omni completion candidates is available via ``:messages`` if the ``verbose`` option is set to a value greater than 0.
+
 ### The `lua_define_completefunc` option
 
 By default the Lua file type plug-in sets the ['completefunc'] [] option so that Vim can complete Lua keywords, global variables and library members using Control-X Control-U. If you don't want the 'completefunc' option to be changed by the plug-in, you can set this option to zero (false) in your [vimrc script] [vimrc]:

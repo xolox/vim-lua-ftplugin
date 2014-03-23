@@ -467,6 +467,17 @@ function! xolox#lua#tweakoptions() " {{{1
 endfunction
 
 function! xolox#lua#dofile(pathname, arguments) " {{{1
+  if exists("g:lua_omni_module_blacklist") && type(g:lua_omni_module_blacklist) == 3
+    let l:blacklist = join(map(copy(g:lua_omni_module_blacklist), '"v:val!~\"^".v:val."$\""'),'&&')
+    call filter(a:arguments, l:blacklist)
+    call xolox#misc#msg#debug("lua.vim %s: modules to load are filtered by %s",
+          \ g:xolox#lua#version,
+          \ join(g:lua_omni_module_blacklist, " "))
+  endif
+  call xolox#misc#msg#debug("lua.vim %s: running luafile %s %s",
+        \ g:xolox#lua#version,
+        \ fnameescape(a:pathname),
+        \ join(a:arguments, " "))
   if has('lua')
     " Use the Lua Interface for Vim.
     redir => output
