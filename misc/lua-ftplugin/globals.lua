@@ -1,8 +1,8 @@
 #!/usr/bin/env lua
 
 -- Parse output of "luac -l" for GETGLOBAL/SETGLOBAL instructions.
-local command = string.format('luac -p -l "%s"', arg[1])
-local verbose = tonumber(arg[2]) ~= 0
+local command = string.format('luac -p -l "%s"', arg[0])
+local verbose = tonumber(arg[1]) ~= 0
 local compiler = io.popen(command)
 local matches = {}
 for line in compiler:lines() do
@@ -30,6 +30,6 @@ for _, match in ipairs(matches) do
     type = read and 'E' or 'W'
   end
   if type == 'E' or type == 'W' or verbose then
-    print(template:format(arg[1], match.lnum, operation, status, match.varname, type))
+    print(template:format(arg[0], match.lnum, operation, status, match.varname, type))
   end
 end
