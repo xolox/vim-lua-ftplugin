@@ -20,9 +20,12 @@ Contents ~
   12. The |lua_define_completefunc| option
   13. The |lua_define_omnifunc| option
   14. The |lua_define_completion_mappings| option
- 4. Contact                                                    |ft_lua-contact|
- 5. License                                                    |ft_lua-license|
- 6. References                                              |ft_lua-references|
+ 4. Commands                                                  |ft_lua-commands|
+  1. The |:LuaCheckSyntax| command
+  2. The |:LuaCheckGlobals| command
+ 5. Contact                                                    |ft_lua-contact|
+ 6. License                                                    |ft_lua-license|
+ 7. References                                              |ft_lua-references|
 
 ===============================================================================
                                                           *ft_lua-introduction*
@@ -230,6 +233,24 @@ like these mappings you can set this option to zero (false). In that case the
 mappings will not be defined.
 
 ===============================================================================
+                                                              *ft_lua-commands*
+Commands ~
+
+-------------------------------------------------------------------------------
+The *:LuaCheckSyntax* command
+
+Check the current file for syntax errors using the Lua compiler. This command
+is executed automatically when you write a Lua script to disk (i.e. when you
+save your changes) unless |lua_check_syntax| is false.
+
+-------------------------------------------------------------------------------
+The *:LuaCheckGlobals* command
+
+Check the current file for undefined global variables. This command is executed
+automatically when you write a Lua script to disk (i.e. when you save your
+changes) unless |lua_check_globals| is false or syntax errors were detected.
+
+===============================================================================
                                                                *ft_lua-contact*
 Contact ~
 
@@ -242,7 +263,7 @@ lua-ftplugin. If you like this plug-in please vote for it on Vim Online [17].
                                                                *ft_lua-license*
 License ~
 
-This software is licensed under the MIT license [18]. ÂŠ 2013 Peter Odding
+This software is licensed under the MIT license [18]. ÂŠ 2014 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================

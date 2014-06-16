@@ -119,14 +119,24 @@ By default the Lua file type plug-in sets the ['omnifunc'] [] option so that Vim
 
 By default the Lua file type plug-in defines insert mode mappings so that the plug-in is called whenever you type a single quote, double quote or a dot inside a Lua buffer. This enables context sensitive completion. If you don't like these mappings you can set this option to zero (false). In that case the mappings will not be defined.
 
+## Commands
+
+### The `:LuaCheckSyntax` command
+
+Check the current file for syntax errors using the Lua compiler. This command is executed automatically when you write a Lua script to disk (i.e. when you save your changes) unless `lua_check_syntax` is false.
+
+### The `:LuaCheckGlobals` command
+
+Check the current file for undefined global variables. This command is executed automatically when you write a Lua script to disk (i.e. when you save your changes) unless `lua_check_globals` is false or syntax errors were detected.
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/lua-ftplugin> and <http://github.com/xolox/vim-lua-ftplugin>. If you like this plug-in please vote for it on [Vim Online][script].
 
 ## License
 
-This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).  
-© 2013 Peter Odding &lt;<peter@peterodding.com>&gt;.
+This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).
+© 2014 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
 ['completefunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'completefunc'
