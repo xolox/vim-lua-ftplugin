@@ -18,9 +18,10 @@ Contents ~
   10. The |lua_complete_library| option
   11. The |lua_complete_dynamic| option
   12. The |lua_complete_omni| option
-  13. The |lua_define_completefunc| option
-  14. The |lua_define_omnifunc| option
-  15. The |lua_define_completion_mappings| option
+  13. The |lua_omni_blacklist| option
+  14. The |lua_define_completefunc| option
+  15. The |lua_define_omnifunc| option
+  16. The |lua_define_completion_mappings| option
  4. Commands                                                  |ft_lua-commands|
   1. The |:LuaCheckSyntax| command
   2. The |:LuaCheckGlobals| command
@@ -210,6 +211,24 @@ following command:
 <
 Now when you type Control-X Control-O Vim will hang for a moment, after which
 you should be presented with an enormous list of completion candidates :-)
+
+-------------------------------------------------------------------------------
+The *lua_omni_blacklist* option
+
+If you like the omni completion mode but certain modules are giving you trouble
+(for example crashing Vim) you can exclude such modules from being loaded by
+the omni completion. You can do so by setting 'lua_omni_module_blacklist' to a
+list of strings containing Vim regular expression patterns. The patterns are
+combined as follows:
+>
+  " Here's the black list:
+  let g:lua_omni_blacklist = ['pl\.strict', 'lgi\..']
+  
+  " Here's the resulting regular expression pattern:
+  '^\(pl\.strict\|lgi\..\)$'
+<
+The example above prevents the module 'pl.strict' and all modules with the
+prefix 'lgi.' from being loaded.
 
 -------------------------------------------------------------------------------
 The *lua_define_completefunc* option
