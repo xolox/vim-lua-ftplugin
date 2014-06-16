@@ -3,7 +3,7 @@
 " Last Change: June 16, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.17'
+let g:xolox#lua#version = '0.7.18'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -134,7 +134,8 @@ endfunction
 function! xolox#lua#checkglobals(verbose) " {{{1
   let curfile = expand('%')
   call xolox#misc#msg#debug("lua.vim %s: Checking for undefined globals in '%s' using '%s' ..", g:xolox#lua#version, curfile, s:globals_script)
-  let output = xolox#lua#dofile(s:globals_script, [curfile, a:verbose])
+  let compiler = xolox#misc#option#get('lua_compiler_name', 'luac')
+  let output = xolox#lua#dofile(s:globals_script, [compiler, curfile, a:verbose])
   call setqflist(eval('[' . join(output, ',') . ']'), 'r')
   cwindow
 endfunction

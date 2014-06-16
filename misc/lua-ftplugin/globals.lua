@@ -1,8 +1,16 @@
 #!/usr/bin/env lua
 
+-- Unpack arguments from Vim.
+local compiler = arg[1]
+local filename = arg[2]
+local verbose = tonumber(arg[3]) ~= 0
+
+local function quote(s)
+  return string.format('"%s"', (s:gsub('["\\]', '\\%0')))
+end
+
 -- Parse output of "luac -l" for GETGLOBAL/SETGLOBAL instructions.
-local command = string.format('luac -p -l "%s"', arg[1])
-local verbose = tonumber(arg[2]) ~= 0
+local command = string.format('%s -p -l %s', quote(compiler), quote(filename))
 local compiler = io.popen(command)
 local matches = {}
 for line in compiler:lines() do
