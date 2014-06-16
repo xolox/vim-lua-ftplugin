@@ -3,7 +3,7 @@
 " Last Change: June 16, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.13'
+let g:xolox#lua#version = '0.7.17'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -132,7 +132,9 @@ function! s:highlighterrors()
 endfunction
 
 function! xolox#lua#checkglobals(verbose) " {{{1
-  let output = xolox#lua#dofile(s:globals_script, [expand('%'), a:verbose])
+  let curfile = expand('%')
+  call xolox#misc#msg#debug("lua.vim %s: Checking for undefined globals in '%s' using '%s' ..", g:xolox#lua#version, curfile, s:globals_script)
+  let output = xolox#lua#dofile(s:globals_script, [curfile, a:verbose])
   call setqflist(eval('[' . join(output, ',') . ']'), 'r')
   cwindow
 endfunction
@@ -472,13 +474,31 @@ endfunction
 function! xolox#lua#dofile(pathname, arguments) " {{{1
   if has('lua')
     " Use the Lua Interface for Vim.
+    call xolox#misc#msg#debug("lua.vim %s: Running '%s' using Lua Interface for Vim ..", g:xolox#lua#version, a:pathname)
     redir => output
-    lua arg = vim.eval('a:arguments')
-    execute 'silent luafile' fnameescape(a:pathname)
+    " https://github.com/xolox/vim-lua-ftplugin/pull/23 reports that somewhere
+    " in the communication between Vim and Lua someone switches from one based
+    " indexes to zero based indexes, breaking the Vim plug-in. I haven't been
+    " able to reproduce this but the following code is intended to compensate
+    " should the problem occur. As a bonus it's compatible with how the Lua
+    " interpreter runs Lua scripts :-)
+    silent lua << EOL
+      local script = vim.eval('a:pathname')
+      arg = vim.eval('a:arguments')
+      if arg[0] == nil then
+        -- Keep the list order, just set arg[0] to the pathname of the script.
+        arg[0] = script
+      else
+        -- Insert the pathname of the script in arg[0], shifting up arguments.
+        table.insert(arg, 0, script)
+      end
+      dofile(script)
+EOL
     redir END
     return split(output, "\n")
   else
     " Use the command line Lua interpreter.
+    call xolox#misc#msg#debug("lua.vim %s: Running '%s' using command line Lua interpreter ..", g:xolox#lua#version, a:pathname)
     let interpreter = xolox#misc#escape#shell(xolox#misc#option#get('lua_interpreter_path', 'lua'))
     let pathname = xolox#misc#escape#shell(a:pathname)
     let arguments = join(map(a:arguments, 'xolox#misc#escape#shell(v:val)'))
