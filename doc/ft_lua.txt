@@ -9,17 +9,18 @@ Contents ~
   1. The |lua_path| option
   2. The |lua_check_syntax| option
   3. The |lua_check_globals| option
-  4. The |lua_compiler_name| option
-  5. The |lua_compiler_args| option
-  6. The |lua_error_format| option
-  7. The |lua_complete_keywords| option
-  8. The |lua_complete_globals| option
-  9. The |lua_complete_library| option
-  10. The |lua_complete_dynamic| option
-  11. The |lua_complete_omni| option
-  12. The |lua_define_completefunc| option
-  13. The |lua_define_omnifunc| option
-  14. The |lua_define_completion_mappings| option
+  4. The |lua_interpreter_path| option
+  5. The |lua_compiler_name| option
+  6. The |lua_compiler_args| option
+  7. The |lua_error_format| option
+  8. The |lua_complete_keywords| option
+  9. The |lua_complete_globals| option
+  10. The |lua_complete_library| option
+  11. The |lua_complete_dynamic| option
+  12. The |lua_complete_omni| option
+  13. The |lua_define_completefunc| option
+  14. The |lua_define_omnifunc| option
+  15. The |lua_define_completion_mappings| option
  4. Commands                                                  |ft_lua-commands|
   1. The |:LuaCheckSyntax| command
   2. The |:LuaCheckGlobals| command
@@ -139,6 +140,13 @@ can set this option to false (0):
   let g:lua_check_globals = 0
 <
 You can manually check the globals using the ':CheckGlobals' command.
+
+-------------------------------------------------------------------------------
+The *lua_interpreter_path* option
+
+The name or path of the Lua interpreter used to evaluate Lua scripts used by
+the plug-in (for example the script that checks for undefined global variables,
+see |:LuaCheckGlobals|).
 
 -------------------------------------------------------------------------------
 The *lua_compiler_name* option

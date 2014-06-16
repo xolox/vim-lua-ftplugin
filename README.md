@@ -62,6 +62,10 @@ When you write a Lua script to disk the plug-in automatically runs the Lua compi
 
 You can manually check the globals using the `:CheckGlobals` command.
 
+### The `lua_interpreter_path` option
+
+The name or path of the Lua interpreter used to evaluate Lua scripts used by the plug-in (for example the script that checks for undefined global variables, see `:LuaCheckGlobals`).
+
 ### The `lua_compiler_name` option
 
 The name or path of the Lua compiler used to check for syntax errors (defaults to `luac`). You can set this option to run the Lua compiler from a non-standard location or to run a dedicated syntax checker like [lualint][ll].

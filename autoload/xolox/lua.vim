@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: August 31, 2013
+" Last Change: June 16, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
 let g:xolox#lua#version = '0.7.13'
@@ -476,10 +476,11 @@ function! xolox#lua#dofile(pathname, arguments) " {{{1
     return split(output, "\n")
   else
     " Use the command line Lua interpreter.
-    let qpath = xolox#misc#escape#shell(a:pathname)
-    let qargs = join(map(a:arguments, 'xolox#misc#escape#shell(v:val)'))
-    " TODO Make name of Lua executable configurable!
-    return xolox#misc#os#exec({'command': printf('lua %s %s', qpath, qargs)})['stdout']
+    let interpreter = xolox#misc#escape#shell(xolox#misc#option#get('lua_interpreter_path', 'lua'))
+    let pathname = xolox#misc#escape#shell(a:pathname)
+    let arguments = join(map(a:arguments, 'xolox#misc#escape#shell(v:val)'))
+    let command = printf('%s %s %s', interpreter, pathname, arguments)
+    return xolox#misc#os#exec({'command': command})['stdout']
   endif
 endfunction
 
