@@ -24,12 +24,16 @@ local template = "{'filename': '%s', 'lnum': %i, 'text': '%s %s global %s', 'typ
 for _, match in ipairs(matches) do
   local read = match.inst == 'GETGLOBAL'
   local operation = read and 'Read of' or 'Write to'
-  local status, type = 'known', 'I'
-  if not _G[match.varname] then
+  local status, severity = 'known', 'I'
+  local varname = match.varname
+  local value = _G[varname]
+  if value == nil then
     status = 'unknown'
-    type = read and 'E' or 'W'
+    severity = read and 'E' or 'W'
+  elseif type(value) == 'function' then
+    varname = varname .. '()'
   end
-  if type == 'E' or type == 'W' or verbose then
-    print(template:format(arg[1], match.lnum, operation, status, match.varname, type))
+  if severity == 'E' or severity == 'W' or verbose then
+    print(template:format(arg[1], match.lnum, operation, status, varname, severity))
   end
 end
