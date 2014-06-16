@@ -54,10 +54,11 @@ endfunction
 
 function! xolox#lua#autocheck() " {{{1
   if &filetype == 'lua'
+    let success = 1
     if xolox#misc#option#get('lua_check_syntax', 1)
-      call xolox#lua#checksyntax()
+      let success = xolox#lua#checksyntax()
     endif
-    if xolox#misc#option#get('lua_check_globals', 0) && empty(getqflist())
+    if xolox#misc#option#get('lua_check_globals', 0) && success
       call xolox#lua#checkglobals(0)
     endif
   endif
@@ -73,17 +74,18 @@ function! xolox#lua#checksyntax() " {{{1
     let message .= " automatic syntax checking for Lua scripts."
     let g:lua_check_syntax = 0
     call xolox#misc#msg#warn(message, g:xolox#lua#version)
-    return
+    return 1
   endif
   " Check for errors using my shell.vim plug-in so that executing
   " luac.exe on Windows doesn't pop up the nasty console window.
+  call xolox#misc#msg#debug("lua.vim %s: Checking syntax of '%s' using Lua compiler ..", g:xolox#lua#version, expand('%'))
   let command = [compiler_name, compiler_args, xolox#misc#escape#shell(expand('%'))]
   let output = xolox#misc#os#exec({'command': join(command) . ' 2>&1', 'check': 0})['stdout']
   if empty(output)
     " Clear location list.
     call setloclist(winnr(), [], 'r')
     lclose
-    return
+    return 1
   endif
   " Save the errors to a file we can load with :lgetfile.
   let errorfile = tempname()
@@ -112,6 +114,7 @@ function! xolox#lua#checksyntax() " {{{1
     " Cleanup the file with errors.
     call delete(errorfile)
   endtry
+  return 0
 endfunction
 
 function! s:highlighterrors()
