@@ -42,7 +42,9 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
       call xolox#misc#msg#debug("lua.vim %s: Got %s from %s", g:xolox#lua#version, a:luavar, a:envvar)
     else
       try
-        let path = xolox#misc#os#exec({'command': 'lua -e "io.write(' . a:luavar . ')"'})['stdout'][0]
+        let interpreter = xolox#misc#escape#shell(xolox#misc#option#get('lua_interpreter_path', 'lua'))
+        let command = printf('%s -e "io.write(%s)"', interpreter, a:luavar)
+        let path = xolox#misc#os#exec({'command': command})['stdout'][0]
         call xolox#misc#msg#debug("lua.vim %s: Got %s from external Lua interpreter", g:xolox#lua#version, a:luavar)
       catch
         call xolox#misc#msg#warn("lua.vim %s: Failed to get %s from external Lua interpreter: %s", g:xolox#lua#version, a:luavar, v:exception)
