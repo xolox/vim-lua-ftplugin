@@ -3,7 +3,7 @@
 " Last Change: June 17, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.20'
+let g:xolox#lua#version = '0.7.21'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -25,7 +25,7 @@ endfunction
 
 function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
   let path = ''
-  if has('lua')
+  if xolox#misc#option#get('lua_internal', has('lua'))
     " Try to get the search path using the Lua Interface for Vim.
     try
       redir => path
@@ -478,7 +478,7 @@ function! xolox#lua#tweakoptions() " {{{1
 endfunction
 
 function! xolox#lua#dofile(pathname, arguments) " {{{1
-  if has('lua')
+  if xolox#misc#option#get('lua_internal', has('lua'))
     " Use the Lua Interface for Vim.
     call xolox#misc#msg#debug("lua.vim %s: Running '%s' using Lua Interface for Vim ..", g:xolox#lua#version, a:pathname)
     redir => output

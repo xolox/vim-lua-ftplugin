@@ -10,18 +10,19 @@ Contents ~
   2. The |lua_check_syntax| option
   3. The |lua_check_globals| option
   4. The |lua_interpreter_path| option
-  5. The |lua_compiler_name| option
-  6. The |lua_compiler_args| option
-  7. The |lua_error_format| option
-  8. The |lua_complete_keywords| option
-  9. The |lua_complete_globals| option
-  10. The |lua_complete_library| option
-  11. The |lua_complete_dynamic| option
-  12. The |lua_complete_omni| option
-  13. The |lua_omni_blacklist| option
-  14. The |lua_define_completefunc| option
-  15. The |lua_define_omnifunc| option
-  16. The |lua_define_completion_mappings| option
+  5. The |lua_internal| option
+  6. The |lua_compiler_name| option
+  7. The |lua_compiler_args| option
+  8. The |lua_error_format| option
+  9. The |lua_complete_keywords| option
+  10. The |lua_complete_globals| option
+  11. The |lua_complete_library| option
+  12. The |lua_complete_dynamic| option
+  13. The |lua_complete_omni| option
+  14. The |lua_omni_blacklist| option
+  15. The |lua_define_completefunc| option
+  16. The |lua_define_omnifunc| option
+  17. The |lua_define_completion_mappings| option
  4. Commands                                                  |ft_lua-commands|
   1. The |:LuaCheckSyntax| command
   2. The |:LuaCheckGlobals| command
@@ -149,6 +150,15 @@ The *lua_interpreter_path* option
 The name or path of the Lua interpreter used to evaluate Lua scripts used by
 the plug-in (for example the script that checks for undefined global variables,
 see |:LuaCheckGlobals|).
+
+-------------------------------------------------------------------------------
+The *lua_internal* option
+
+If you're running a version of Vim that supports the Lua Interface for Vim (see
+|if_lua.txt|) then all Lua code evaluated by the Lua file type plug-in is
+evaluated using the Lua Interface for Vim. If the Lua Interface for Vim is not
+available the plug-in falls back to using an external Lua interpreter. You can
+set this to false (0) to force the plug-in to use an external Lua interpreter.
 
 -------------------------------------------------------------------------------
 The *lua_compiler_name* option

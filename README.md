@@ -66,6 +66,10 @@ You can manually check the globals using the `:CheckGlobals` command.
 
 The name or path of the Lua interpreter used to evaluate Lua scripts used by the plug-in (for example the script that checks for undefined global variables, see `:LuaCheckGlobals`).
 
+### The `lua_internal` option
+
+If you're running a version of Vim that supports the Lua Interface for Vim (see [if_lua.txt][if_lua.txt]) then all Lua code evaluated by the Lua file type plug-in is evaluated using the Lua Interface for Vim. If the Lua Interface for Vim is not available the plug-in falls back to using an external Lua interpreter. You can set this to false (0) to force the plug-in to use an external Lua interpreter.
+
 ### The `lua_compiler_name` option
 
 The name or path of the Lua compiler used to check for syntax errors (defaults to `luac`). You can set this option to run the Lua compiler from a non-standard location or to run a dedicated syntax checker like [lualint][ll].
@@ -165,6 +169,7 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [github-lua-ftplugin]: http://github.com/xolox/vim-lua-ftplugin
 [github-misc]: http://github.com/xolox/vim-misc
+[if_lua.txt]: http://vimdoc.sourceforge.net/htmldoc/if_lua.html#if_lua.txt
 [inc]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27include%27
 [inex]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27includeexpr%27
 [ll]: http://lua-users.org/wiki/LuaLint
