@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 17, 2014
+" Last Change: July 6, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.21'
+let g:xolox#lua#version = '0.7.22'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -482,22 +482,31 @@ function! xolox#lua#dofile(pathname, arguments) " {{{1
     " Use the Lua Interface for Vim.
     call xolox#misc#msg#debug("lua.vim %s: Running '%s' using Lua Interface for Vim ..", g:xolox#lua#version, a:pathname)
     redir => output
-    " https://github.com/xolox/vim-lua-ftplugin/pull/23 reports that somewhere
-    " in the communication between Vim and Lua someone switches from one based
-    " indexes to zero based indexes, breaking the Vim plug-in. I haven't been
-    " able to reproduce this but the following code is intended to compensate
-    " should the problem occur. As a bonus it's compatible with how the Lua
-    " interpreter runs Lua scripts :-)
     silent lua << EOL
       local script = vim.eval('a:pathname')
-      arg = vim.eval('a:arguments')
-      if arg[0] == nil then
-        -- Keep the list order, just set arg[0] to the pathname of the script.
-        arg[0] = script
-      else
-        -- Insert the pathname of the script in arg[0], shifting up arguments.
-        table.insert(arg, 0, script)
+      local arguments = vim.eval('a:arguments')
+      if type(arguments) == 'userdata' then
+        -- At some point the Lua Interface for Vim started using userdata proxy
+        -- objects for Vim lists and dictionaries (refer to :help lua-list).
+        -- The Lua file type plug-in for Vim wasn't expecting this so broke
+        -- with errors like:
+        --
+        --  * bad argument #1 to 'insert' (table expected, got userdata)
+        --  * bad argument #1 to 'ipairs' (table expected, got userdata)
+        --
+        -- The switch to userdata makes sense but these userdata objects don't
+        -- behave like Lua tables at all (they're not intended to) which is bad
+        -- for us, so we translate the userdata objects back into proper Lua
+        -- tables (e.g. with one based indices).
+        local arguments_as_lua_table = {}
+        -- Userdata proxies for Vim lists start at index zero.
+        for i = 0, #arguments - 1 do
+          table.insert(arguments_as_lua_table, arguments[i])
+        end
+        arguments = arguments_as_lua_table
       end
+      arguments[0] = script
+      arg = arguments
       dofile(script)
 EOL
     redir END
