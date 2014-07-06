@@ -1,10 +1,12 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 15, 2011
+" Last Change: July 6, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-" This script contains static user completion data based
-" on the Lua 5.1 reference manual and implementation.
+" This script contains static user completion data based on the Lua 5.1
+" reference manual and implementation (it also contains the 'goto' keyword
+" from Lua 5.2 but hasn't been updated with regards to the standard library
+" contents yet).
 
 " Enable line continuation.
 let s:cpo_save = &cpo
@@ -21,6 +23,7 @@ let g:xolox#lua_data#keywords = [
       \ { 'word': 'false', 'kind': 'k' },
       \ { 'word': 'for', 'kind': 'k' },
       \ { 'word': 'function', 'kind': 'k' },
+      \ { 'word': 'goto', 'kind': 'k' },
       \ { 'word': 'if', 'kind': 'k' },
       \ { 'word': 'in', 'kind': 'k' },
       \ { 'word': 'local', 'kind': 'k' },
@@ -32,7 +35,8 @@ let g:xolox#lua_data#keywords = [
       \ { 'word': 'then', 'kind': 'k' },
       \ { 'word': 'true', 'kind': 'k' },
       \ { 'word': 'until', 'kind': 'k' },
-      \ { 'word': 'while', 'kind': 'k' } ]
+      \ { 'word': 'while', 'kind': 'k' },
+      \ ]
 
 " Global variables. {{{1
 let g:xolox#lua_data#globals = [
@@ -61,7 +65,6 @@ let g:xolox#lua_data#globals = [
       \ { 'word': 'package', 'kind': 'v' },
       \ { 'word': 'pairs()', 'kind': 'f' },
       \ { 'word': 'pcall()', 'kind': 'f' },
-      \ { 'word': 'prettyprint()', 'kind': 'f' },
       \ { 'word': 'print()', 'kind': 'f' },
       \ { 'word': 'rawequal()', 'kind': 'f' },
       \ { 'word': 'rawget()', 'kind': 'f' },
@@ -76,7 +79,8 @@ let g:xolox#lua_data#globals = [
       \ { 'word': 'tostring()', 'kind': 'f' },
       \ { 'word': 'type()', 'kind': 'f' },
       \ { 'word': 'unpack()', 'kind': 'f' },
-      \ { 'word': 'xpcall()', 'kind': 'f' } ]
+      \ { 'word': 'xpcall()', 'kind': 'f' },
+      \ ]
 
 " Standard library identifiers. {{{1
 let g:xolox#lua_data#library = [
@@ -108,7 +112,6 @@ let g:xolox#lua_data#library = [
       \ { 'word': 'io.output()', 'kind': 'f' },
       \ { 'word': 'io.popen()', 'kind': 'f' },
       \ { 'word': 'io.read()', 'kind': 'f' },
-      \ { 'word': 'io.size()', 'kind': 'f' },
       \ { 'word': 'io.stderr', 'kind': 'm' },
       \ { 'word': 'io.stdin', 'kind': 'm' },
       \ { 'word': 'io.stdout', 'kind': 'm' },
@@ -172,7 +175,6 @@ let g:xolox#lua_data#library = [
       \ { 'word': 'string.format()', 'kind': 'f' },
       \ { 'word': 'string.gfind()', 'kind': 'f' },
       \ { 'word': 'string.gmatch()', 'kind': 'f' },
-      \ { 'word': 'string.gsplit()', 'kind': 'f' },
       \ { 'word': 'string.gsub()', 'kind': 'f' },
       \ { 'word': 'string.len()', 'kind': 'f' },
       \ { 'word': 'string.lower()', 'kind': 'f' },
@@ -189,7 +191,8 @@ let g:xolox#lua_data#library = [
       \ { 'word': 'table.maxn()', 'kind': 'f' },
       \ { 'word': 'table.remove()', 'kind': 'f' },
       \ { 'word': 'table.setn()', 'kind': 'f' },
-      \ { 'word': 'table.sort()', 'kind': 'f' } ]
+      \ { 'word': 'table.sort()', 'kind': 'f' },
+      \ ]
 
 " Function signatures. {{{1
 " Sources:

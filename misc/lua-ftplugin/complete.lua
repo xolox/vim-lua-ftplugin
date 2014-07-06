@@ -3,7 +3,7 @@
 --[[
 
 Author: Peter Odding <peter@peterodding.com>
-Last Change: June 14, 2011
+Last Change: July 6, 2014
 URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script prints a few hundred lines of Vim script to standard output.
@@ -11,6 +11,8 @@ These lines are used by my Lua file type plug-in for the Vim text editor to
 provide completion of Lua keywords, globals and library identifiers.
 
 ]]
+
+local indent = '      \\ '
 
 local function sorted(input)
   local keys = {}
@@ -27,17 +29,18 @@ end
 local keywords = {
   ['and'] = true, ['break'] = true, ['do'] = true, ['else'] = true,
   ['elseif'] = true, ['end'] = true, ['false'] = true, ['for'] = true,
-  ['function'] = true, ['if'] = true, ['in'] = true, ['local'] = true,
-  ['nil'] = true, ['not'] = true, ['or'] = true, ['repeat'] = true,
-  ['return'] = true, ['then'] = true, ['true'] = true,
-  ['until'] = true, ['while'] = true
+  ['function'] = true, ['goto'] = true, ['if'] = true, ['in'] = true,
+  ['local'] = true, ['nil'] = true, ['not'] = true, ['or'] = true,
+  ['repeat'] = true, ['return'] = true, ['then'] = true, ['true'] = true,
+  ['until'] = true, ['while'] = true,
 }
 
-io.write 'let s:keywords = ['
+io.write '" Keywords. {{{1\n'
+io.write 'let g:xolox#lua_data#keywords = [\n'
 for keyword in sorted(keywords) do
-  io.write(("\n \\ { 'word': %q, 'kind': 'k' },"):format(keyword))
+  io.write(indent, ("{ 'word': '%s', 'kind': 'k' },\n"):format(keyword))
 end
-io.write ']\n'
+io.write(indent, ']\n\n')
 
 local function identifier(value)
   -- TODO This pattern does *not* match identifiers outside of the C locale
@@ -62,14 +65,18 @@ for global, value in pairs(_G) do
   end
 end
 
-io.write '\nlet s:globals = ['
+io.write '" Global variables. {{{1\n'
+io.write 'let g:xolox#lua_data#globals = [\n'
 for global, kind in sorted(globals) do
-  io.write(("\n \\ { 'word': %q, 'kind': '%s' },"):format(global, kind))
+  io.write(indent, ("{ 'word': '%s', 'kind': '%s' },\n"):format(global, kind))
 end
-io.write ']\n\nlet s:library = ['
+io.write(indent, ']\n\n')
+
+io.write '" Standard library identifiers. {{{1\n'
+io.write 'let g:xolox#lua_data#library = [\n'
 for member, kind in sorted(libraries) do
-  io.write(("\n \\ { 'word': %q, 'kind': '%s' },"):format(member, kind))
+  io.write(indent, ("{ 'word': '%s', 'kind': '%s' },\n"):format(member, kind))
 end
-io.write ']'
+io.write(indent, ']\n')
 
 -- vim: ts=2 sw=2 et
