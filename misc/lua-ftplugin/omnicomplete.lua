@@ -3,7 +3,7 @@
 --[[
 
 Author: Peter Odding <peter@peterodding.com>
-Last Change: May 12, 2013
+Last Change: July 12, 2014
 URL: http://peterodding.com/code/vim/lua-ftplugin
 
 This Lua script is executed by the Lua file type plug-in for Vim to provide
@@ -77,12 +77,23 @@ for kw, _ in pairs(keywords) do
   addmatch(kw, 'k', nil)
 end
 
+local function global_exists(name)
+  -- Don't crash on strict.lua.
+  return pcall(function()
+    if not _G[name] then
+      -- Simulate strict.lua when it isn't active so that we can stick to a
+      -- single code path.
+      error("variable " .. name .. " is not declared")
+    end
+  end)
+end
+
 -- Load installed modules.
 -- XXX What if module loading has side effects? It shouldn't, but still...
 for i = 1, #arg do
   local modulename = arg[i]
   local status, module = pcall(require, modulename)
-  if status and module and not _G[modulename] then
+  if status and module and not global_exists(modulename) then
     _G[modulename] = module
   end
 end
