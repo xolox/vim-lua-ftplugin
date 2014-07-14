@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 12, 2014
+" Last Change: July 14, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.23'
+let g:xolox#lua#version = '0.7.24'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -322,7 +322,10 @@ function! xolox#lua#completefunc(init, base) " {{{1
 endfunction
 
 function! s:getcompletionprefix()
-  return match(strpart(getline('.'), 0, col('.') - 1), '\w\+\.\?\w*$')
+  let text_before_cursor = strpart(getline('.'), 0, col('.') - 1)
+  let completion_prefix = matchstr(text_before_cursor, '\w\+\.\?\w*$')
+  call xolox#misc#msg#debug("lua.vim %s: Matched completion prefix %s.", g:xolox#lua#version, string(completion_prefix))
+  return col('.') - len(completion_prefix) - 1
 endfunction
 
 function! s:addsignatures(entries)
@@ -364,12 +367,16 @@ function! xolox#lua#omnifunc(init, base) " {{{1
   " the getline('.') call below returns an empty string?!
   let pattern = '^' . xolox#misc#escape#pattern(a:base)
   if getline('.') =~ 'require[^''"]*[''"]'
-    return filter(copy(s:omnifunc_modules), 'v:val =~ pattern')
+    let candidates = filter(copy(s:omnifunc_modules), 'v:val =~ pattern')
+    call xolox#misc#msg#debug("lua.vim %s: Completing %i module name(s).", g:xolox#lua#version, len(candidates))
   elseif a:base == ''
-    return s:omnifunc_variables
+    let candidates = s:omnifunc_variables
+    call xolox#misc#msg#debug("lua.vim %s: Completing all %i omni variable(s).", g:xolox#lua#version, len(candidates))
   else
-    return filter(copy(s:omnifunc_variables), 'v:val.word =~ pattern')
+    let candidates = filter(copy(s:omnifunc_variables), 'v:val.word =~ pattern')
+    call xolox#misc#msg#debug("lua.vim %s: Completing %i omni variable(s) matching filter.", g:xolox#lua#version, len(candidates))
   endif
+  return candidates
 endfunction
 
 function! xolox#lua#getomnimodules() " {{{1
