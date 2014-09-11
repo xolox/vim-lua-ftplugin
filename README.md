@@ -113,7 +113,7 @@ Now when you type Control-X Control-O Vim will hang for a moment, after which yo
 
 ### The `lua_omni_blacklist` option
 
-If you like the omni completion mode but certain modules are giving you trouble (for example crashing Vim) you can exclude such modules from being loaded by the omni completion. You can do so by setting `lua_omni_module_blacklist` to a list of strings containing Vim regular expression patterns. The patterns are combined as follows:
+If you like the omni completion mode but certain modules are giving you trouble (for example crashing Vim) you can exclude such modules from being loaded by the omni completion. You can do so by setting `lua_omni_blacklist` to a list of strings containing Vim regular expression patterns. The patterns are combined as follows:
 
     " Here's the black list:
     let g:lua_omni_blacklist = ['pl\.strict', 'lgi\..']
