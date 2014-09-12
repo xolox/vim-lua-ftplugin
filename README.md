@@ -123,6 +123,15 @@ If you like the omni completion mode but certain modules are giving you trouble 
 
 The example above prevents the module `pl.strict` and all modules with the prefix `lgi.` from being loaded.
 
+### The `lua_safe_omni_modules` option
+
+To track down modules that cause side effects while loading, setting
+
+    :let g:lua_safe_omni_modules = 1
+
+restricts the modules to be loaded to the standard Lua modules - which should be safe to load - and provides a list of modules that would have been loaded if this option was not set via the `:messages` command. With this list, the `lua_omni_blacklist` can be iteratively refined to exclude offending modules from omni completion module loading.
+Note that the ['verbose'] [] option has to be >= 1 for the list to be recorded.
+
 ### The `lua_define_completefunc` option
 
 By default the Lua file type plug-in sets the ['completefunc'] [] option so that Vim can complete Lua keywords, global variables and library members using Control-X Control-U. If you don't want the 'completefunc' option to be changed by the plug-in, you can set this option to zero (false) in your [vimrc script] [vimrc]:
@@ -159,6 +168,7 @@ This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/M
 © 2014 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
+['verbose']: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
 ['completefunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'completefunc'
 ['omnifunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'omnifunc'
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27

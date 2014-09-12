@@ -397,6 +397,11 @@ function! xolox#lua#getomnimodules() " {{{1
   call filter(modules, 'v:val !~ pattern')
   let msg = "lua.vim %s: Collected %i module names for omni completion in %s."
   call xolox#misc#timer#stop(msg, g:xolox#lua#version, len(modules), starttime)
+  if xolox#misc#option#get('lua_safe_omni_modules', 0) == 1
+    call xolox#misc#msg#debug("lua.vim: loading Lua standard modules only as g:lua_safe_omni_modules == 1")
+    call xolox#misc#msg#debug("lua.vim: would have loaded: %s", join(modules, ' '))
+    return ['coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table']
+  endif
   return modules
 endfunction
 
