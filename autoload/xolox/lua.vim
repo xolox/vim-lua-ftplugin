@@ -390,7 +390,7 @@ function! xolox#lua#getomnimodules() " {{{1
   endfor
   let modules = keys(modulemap)
   " Always include the standard library modules.
-  call extend(modules, ['coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table'])
+  call extend(modules, ['bit32', 'coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table'])
   call sort(modules, 1)
   let blacklist = xolox#misc#option#get('lua_omni_blacklist', [])
   let pattern = printf('^\(%s\)$', join(blacklist, '\|'))

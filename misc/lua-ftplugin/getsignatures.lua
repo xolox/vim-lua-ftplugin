@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
 local http = require 'socket.http'
-local webpage = http.request 'http://www.lua.org/manual/5.1/manual.html'
+local webpage = http.request 'http://www.lua.org/manual/5.2/manual.html'
 local matches = {}
 for anchor, signature in webpage:gmatch '<h3>%s*<a%s+name="pdf%-(.-)">%s*<code>%s*(.-)%s*</code>%s*</a>%s*</h3>' do
   if anchor ~= signature then
