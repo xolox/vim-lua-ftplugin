@@ -10,7 +10,7 @@ The [Lua][lua] file type plug-in for [Vim][vim] makes it easier to work with Lua
 
  * `K` (normal mode) and `<F1>` (insert mode) on a Lua function or 'method' call will try to open the relevant documentation in the [Lua Reference for Vim][lrv]
 
- * The ['completefunc'][cfu] option is set to allow completion of Lua 5.1 keywords, global variables and library members using Control-X Control-U
+ * The ['completefunc'][cfu] option is set to allow completion of Lua 5.2 keywords, global variables and library members using Control-X Control-U
 
  * The ['omnifunc'][ofu] option is set to allow dynamic completion of the variables defined in all modules installed on the system using Control-X Control-O, however it needs to be explicitly enabled by setting the `lua_complete_omni` option because this functionality may have undesired side effects! When you invoke omni completion after typing `require '` or `require('` you get completion of module names
 
@@ -176,7 +176,7 @@ Thanks go out to everyone who has helped to improve the Lua file type plug-in fo
 ['omnifunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'omnifunc'
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27
 [dll]: http://en.wikipedia.org/wiki/Dynamic-link_library
-[dof]: http://www.lua.org/manual/5.1/manual.html#pdf-dofile
+[dof]: http://www.lua.org/manual/5.2/manual.html#pdf-dofile
 [download-lua-ftplugin]: http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
 [download-misc]: http://peterodding.com/code/vim/downloads/misc.zip
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
@@ -186,14 +186,14 @@ Thanks go out to everyone who has helped to improve the Lua file type plug-in fo
 [inc]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27include%27
 [inex]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27includeexpr%27
 [ll]: http://lua-users.org/wiki/LuaLint
-[lof]: http://www.lua.org/manual/5.1/manual.html#pdf-loadfile
+[lof]: http://www.lua.org/manual/5.2/manual.html#pdf-loadfile
 [lrv]: http://www.vim.org/scripts/script.php?script_id=1291
 [lua]: http://www.lua.org/
 [mit]: http://vimdoc.sourceforge.net/htmldoc/usr_05.html#matchit-install
 [ofu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27omnifunc%27
 [pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
-[pp]: http://www.lua.org/manual/5.1/manual.html#pdf-package.path
-[req]: http://www.lua.org/manual/5.1/manual.html#pdf-require
+[pp]: http://www.lua.org/manual/5.2/manual.html#pdf-package.path
+[req]: http://www.lua.org/manual/5.2/manual.html#pdf-require
 [script]: http://www.vim.org/scripts/script.php?script_id=3625
 [shell]: http://peterodding.com/code/vim/shell/
 [tob]: http://vimdoc.sourceforge.net/htmldoc/motion.html#text-objects

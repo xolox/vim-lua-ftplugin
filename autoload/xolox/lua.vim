@@ -3,7 +3,7 @@
 " Last Change: September 14, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.25'
+let g:xolox#lua#version = '0.8'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -390,7 +390,7 @@ function! xolox#lua#getomnimodules() " {{{1
   endfor
   let modules = keys(modulemap)
   " Always include the standard library modules.
-  call extend(modules, ['coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table'])
+  call extend(modules, ['bit32', 'coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table'])
   call sort(modules, 1)
   let blacklist = xolox#misc#option#get('lua_omni_blacklist', [])
   let pattern = printf('^\(%s\)$', join(blacklist, '\|'))
@@ -400,7 +400,7 @@ function! xolox#lua#getomnimodules() " {{{1
   if xolox#misc#option#get('lua_safe_omni_modules', 0) == 1
     call xolox#misc#msg#debug("lua.vim %s: Loading Lua standard library modules only because g:lua_safe_omni_modules is set.", g:xolox#lua#version)
     call xolox#misc#msg#debug("lua.vim %s: Would have loaded the following modules: %s", g:xolox#lua#version, join(modules, ' '))
-    return ['coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table']
+    return ['bit32', 'coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table']
   endif
   return modules
 endfunction

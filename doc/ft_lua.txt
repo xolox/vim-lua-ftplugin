@@ -55,7 +55,7 @@ code in Vim by providing the following features:
   call will try to open the relevant documentation in the Lua Reference for
   Vim [6]
 
-- The |'completefunc'| option is set to allow completion of Lua 5.1 keywords,
+- The |'completefunc'| option is set to allow completion of Lua 5.2 keywords,
   global variables and library members using Control-X Control-U
 
 - The |'omnifunc'| option is set to allow dynamic completion of the variables
@@ -329,10 +329,10 @@ for Vim (whether through pull requests, bug reports or personal e-mails).
 References ~
 
 [1] http://www.lua.org/
-[2] http://www.lua.org/manual/5.1/manual.html#pdf-package.path
-[3] http://www.lua.org/manual/5.1/manual.html#pdf-dofile
-[4] http://www.lua.org/manual/5.1/manual.html#pdf-loadfile
-[5] http://www.lua.org/manual/5.1/manual.html#pdf-require
+[2] http://www.lua.org/manual/5.2/manual.html#pdf-package.path
+[3] http://www.lua.org/manual/5.2/manual.html#pdf-dofile
+[4] http://www.lua.org/manual/5.2/manual.html#pdf-loadfile
+[5] http://www.lua.org/manual/5.2/manual.html#pdf-require
 [6] http://www.vim.org/scripts/script.php?script_id=1291
 [7] http://peterodding.com/code/vim/lua-ftplugin/screenshots/omni-completion.png
 [8] http://peterodding.com/code/vim/downloads/lua-ftplugin.zip
