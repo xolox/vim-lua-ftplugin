@@ -20,9 +20,10 @@ Contents ~
   12. The |lua_complete_dynamic| option
   13. The |lua_complete_omni| option
   14. The |lua_omni_blacklist| option
-  15. The |lua_define_completefunc| option
-  16. The |lua_define_omnifunc| option
-  17. The |lua_define_completion_mappings| option
+  15. The |lua_safe_omni_modules| option
+  16. The |lua_define_completefunc| option
+  17. The |lua_define_omnifunc| option
+  18. The |lua_define_completion_mappings| option
  4. Commands                                                  |ft_lua-commands|
   1. The |:LuaCheckSyntax| command
   2. The |:LuaCheckGlobals| command
@@ -228,9 +229,9 @@ The *lua_omni_blacklist* option
 
 If you like the omni completion mode but certain modules are giving you trouble
 (for example crashing Vim) you can exclude such modules from being loaded by
-the omni completion. You can do so by setting 'lua_omni_module_blacklist' to a
-list of strings containing Vim regular expression patterns. The patterns are
-combined as follows:
+the omni completion. You can do so by setting |lua_omni_blacklist| to a list of
+strings containing Vim regular expression patterns. The patterns are combined
+as follows:
 >
   " Here's the black list:
   let g:lua_omni_blacklist = ['pl\.strict', 'lgi\..']
@@ -240,6 +241,22 @@ combined as follows:
 <
 The example above prevents the module 'pl.strict' and all modules with the
 prefix 'lgi.' from being loaded.
+
+-------------------------------------------------------------------------------
+The *lua_safe_omni_modules* option
+
+To track down modules that cause side effects while loading, setting
+>
+  :let g:lua_safe_omni_modules = 1
+<
+restricts the modules to be loaded to the standard Lua modules - which should
+be safe to load - and provides a list of modules that would have been loaded if
+this option was not set via the ':messages' command. With this list, the
+|lua_omni_blacklist| can be iteratively refined to exclude offending modules
+from omni completion module loading.
+
+Note that the |'verbose'| option has to be set to 1 or higher for the list to
+be recorded.
 
 -------------------------------------------------------------------------------
 The *lua_define_completefunc* option
@@ -303,6 +320,9 @@ License ~
 
 This software is licensed under the MIT license [18]. ÂŠ 2014 Peter Odding
 <peter@peterodding.com>.
+
+Thanks go out to everyone who has helped to improve the Lua file type plug-in
+for Vim (whether through pull requests, bug reports or personal e-mails).
 
 ===============================================================================
                                                             *ft_lua-references*

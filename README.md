@@ -113,7 +113,7 @@ Now when you type Control-X Control-O Vim will hang for a moment, after which yo
 
 ### The `lua_omni_blacklist` option
 
-If you like the omni completion mode but certain modules are giving you trouble (for example crashing Vim) you can exclude such modules from being loaded by the omni completion. You can do so by setting `lua_omni_module_blacklist` to a list of strings containing Vim regular expression patterns. The patterns are combined as follows:
+If you like the omni completion mode but certain modules are giving you trouble (for example crashing Vim) you can exclude such modules from being loaded by the omni completion. You can do so by setting `lua_omni_blacklist` to a list of strings containing Vim regular expression patterns. The patterns are combined as follows:
 
     " Here's the black list:
     let g:lua_omni_blacklist = ['pl\.strict', 'lgi\..']
@@ -122,6 +122,16 @@ If you like the omni completion mode but certain modules are giving you trouble 
     '^\(pl\.strict\|lgi\..\)$'
 
 The example above prevents the module `pl.strict` and all modules with the prefix `lgi.` from being loaded.
+
+### The `lua_safe_omni_modules` option
+
+To track down modules that cause side effects while loading, setting
+
+    :let g:lua_safe_omni_modules = 1
+
+restricts the modules to be loaded to the standard Lua modules - which should be safe to load - and provides a list of modules that would have been loaded if this option was not set via the `:messages` command. With this list, the `lua_omni_blacklist` can be iteratively refined to exclude offending modules from omni completion module loading.
+
+Note that the ['verbose'] [] option has to be set to 1 or higher for the list to be recorded.
 
 ### The `lua_define_completefunc` option
 
@@ -155,10 +165,13 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 
 ## License
 
-This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).
+This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).  
 © 2014 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
+Thanks go out to everyone who has helped to improve the Lua file type plug-in for Vim (whether through pull requests, bug reports or personal e-mails).
 
+
+['verbose']: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
 ['completefunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'completefunc'
 ['omnifunc']: http://vimdoc.sourceforge.net/htmldoc/options.html#'omnifunc'
 [cfu]: http://vimdoc.sourceforge.net/htmldoc/options.html#%27completefunc%27

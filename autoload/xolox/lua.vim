@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 14, 2014
+" Last Change: September 14, 2014
 " URL: http://peterodding.com/code/vim/lua-ftplugin
 
-let g:xolox#lua#version = '0.7.24'
+let g:xolox#lua#version = '0.7.25'
 let s:miscdir = expand('<sfile>:p:h:h:h') . '/misc/lua-ftplugin'
 let s:omnicomplete_script = s:miscdir . '/omnicomplete.lua'
 let s:globals_script = s:miscdir . '/globals.lua'
@@ -397,6 +397,11 @@ function! xolox#lua#getomnimodules() " {{{1
   call filter(modules, 'v:val !~ pattern')
   let msg = "lua.vim %s: Collected %i module names for omni completion in %s."
   call xolox#misc#timer#stop(msg, g:xolox#lua#version, len(modules), starttime)
+  if xolox#misc#option#get('lua_safe_omni_modules', 0) == 1
+    call xolox#misc#msg#debug("lua.vim %s: Loading Lua standard library modules only because g:lua_safe_omni_modules is set.", g:xolox#lua#version)
+    call xolox#misc#msg#debug("lua.vim %s: Would have loaded the following modules: %s", g:xolox#lua#version, join(modules, ' '))
+    return ['coroutine', 'debug', 'io', 'math', 'os', 'package', 'string', 'table']
+  endif
   return modules
 endfunction
 
