@@ -23,9 +23,16 @@ function! xolox#lua#includeexpr(fname) " {{{1
   return a:fname
 endfunction
 
+let s:lua_path_cache = ['', []]
 function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
+  if exists('g:lua_path') && s:lua_path_cache[0] == g:lua_path
+    return s:lua_path_cache[1]
+  endif
+
   let path = ''
-  if xolox#misc#option#get('lua_internal', has('lua'))
+  if exists('g:lua_path')
+    let path = g:lua_path
+  elseif xolox#misc#option#get('lua_internal', has('lua'))
     " Try to get the search path using the Lua Interface for Vim.
     try
       redir => path
@@ -36,6 +43,7 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
       redir END
     endtry
   endif
+
   if empty(path)
     let path = eval(a:envvar)
     if !empty(path)
@@ -51,7 +59,10 @@ function! xolox#lua#getsearchpath(envvar, luavar) " {{{1
       endtry
     endif
   endif
-  return split(xolox#misc#str#trim(path), ';')
+
+  let g:lua_path = path
+  let s:lua_path_cache = [path, split(xolox#misc#str#trim(path), ';')]
+  return s:lua_path_cache[1]
 endfunction
 
 function! xolox#lua#autocheck() " {{{1
