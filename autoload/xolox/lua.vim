@@ -250,7 +250,7 @@ function! xolox#lua#tokeniscode() " {{{1
 endfunction
 
 function! s:getsynid(transparent)
-  let id = synID(line('.'), col('.') - 1, 1)
+  let id = synID(line('.'), col('.'), 1)
   if a:transparent
     let id = synIDtrans(id)
   endif
