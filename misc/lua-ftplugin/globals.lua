@@ -42,6 +42,6 @@ for _, match in ipairs(matches) do
     varname = varname .. '()'
   end
   if severity == 'E' or severity == 'W' or verbose then
-    print(template:format(arg[1], match.lnum, operation, status, varname, severity))
+    print(template:format(arg[2], match.lnum, operation, status, varname, severity))
   end
 end
