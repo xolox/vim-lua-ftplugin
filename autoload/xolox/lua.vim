@@ -442,9 +442,14 @@ function! s:expandsearchpath(searchpath, modules)
   endfor
 endfunction
 
+function! xolox#lua#validmodule(name)
+  return strpart(a:name, 0, 1) ==# '{'
+endfunction
+
 function! xolox#lua#getomnivariables(modules) " {{{1
   let starttime = xolox#misc#timer#start()
   let output = xolox#lua#dofile(s:omnicomplete_script, a:modules)
+  let output = filter(output, 'xolox#lua#validmodule(v:val)')
   let variables = eval('[' . join(output, ',') . ']')
   call sort(variables, 1)
   let msg = "lua.vim %s: Collected %i variables for omni completion in %s."
