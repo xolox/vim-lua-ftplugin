@@ -60,10 +60,10 @@ call add(s:undo_ftplugin, 'nunmap <buffer> K')
 " Define custom text objects to navigate Lua source code. {{{1
 noremap <buffer> <silent> [{ m':call xolox#lua#jumpblock(0)<Cr>
 noremap <buffer> <silent> ]} m':call xolox#lua#jumpblock(1)<Cr>
-noremap <buffer> <silent> [[ m':call xolox#lua#jumpthisfunc(0)<Cr>
-noremap <buffer> <silent> ][ m':call xolox#lua#jumpthisfunc(1)<Cr>
-noremap <buffer> <silent> [] m':call xolox#lua#jumpotherfunc(0)<Cr>
-noremap <buffer> <silent> ]] m':call xolox#lua#jumpotherfunc(1)<Cr>
+noremap <buffer> <silent> [[ m':call xolox#lua#jumpfuncstart(0)<Cr>
+noremap <buffer> <silent> ][ m':call xolox#lua#jumpfuncend(1)<Cr>
+noremap <buffer> <silent> [] m':call xolox#lua#jumpfuncend(0)<Cr>
+noremap <buffer> <silent> ]] m':call xolox#lua#jumpfuncstart(1)<Cr>
 call add(s:undo_ftplugin, 'unmap <buffer> [{')
 call add(s:undo_ftplugin, 'unmap <buffer> ]}')
 call add(s:undo_ftplugin, 'unmap <buffer> [[')

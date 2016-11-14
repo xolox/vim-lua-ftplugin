@@ -197,52 +197,34 @@ function! xolox#lua#jumpblock(forward) " {{{1
   return searchpair(start, middle, end, flags, '!xolox#lua#tokeniscode()')
 endfunction
 
-function! s:getfunscope()
-  let firstpos = [0, 1, 1, 0]
-  let lastpos = getpos('$')
-  while search('\<function\>', 'bW')
-    if xolox#lua#tokeniscode()
-      let firstpos = getpos('.')
-      break
-    endif
-  endwhile
-  if xolox#lua#jumpblock(1)
-    let lastpos = getpos('.')
-  endif
-  return [firstpos, lastpos]
-endfunction
-
-function! xolox#lua#jumpthisfunc(forward) " {{{1
-  let cpos = [line('.'), col('.')]
-  let fpos = [1, 1]
-  let lpos = [line('$'), 1]
-  while search('\<function\>', a:forward ? 'W' : 'bW')
+function! s:jumpthisfuncstart()
+  while search('\<function\>\|\%^', 'bcW')
     if xolox#lua#tokeniscode()
       break
     endif
   endwhile
-  let cursorline = line('.')
-  let [firstpos, lastpos] = s:getfunscope()
-  if cursorline == (a:forward ? lastpos : firstpos)[1]
-    " make the mapping repeatable (line wise at least)
-    execute a:forward ? (lastpos[1] + 1) : (firstpos[1] - 1)
-    let [firstpos, lastpos] = s:getfunscope()
-  endif
-  call setpos('.', a:forward ? lastpos : firstpos)
 endfunction
 
-function! xolox#lua#jumpotherfunc(forward) " {{{1
-  let view = winsaveview()
-  " jump to the start/end of the function
-  call xolox#lua#jumpthisfunc(a:forward)
-  " search for the previous/next function
-  while search('\<function\>', a:forward ? 'W' : 'bW')
-    " ignore strings and comments containing 'function'
+function! xolox#lua#jumpfuncstart(forward) " {{{1
+  while search('\<function\>\|\%^\|\%$', a:forward ? 'W' : 'bW')
     if xolox#lua#tokeniscode()
-      return 1
+      break
     endif
   endwhile
-  call winrestview(view)
+endfunction
+
+function! xolox#lua#jumpfuncend(forward) " {{{1
+  let origline = line('.')
+  call s:jumpthisfuncstart()
+  call xolox#lua#jumpblock(1)
+  if a:forward && line('.') > origline || !a:forward && line('.') < origline
+    return
+  endif
+  call xolox#lua#jumpfuncstart(a:forward)
+  if !a:forward
+    call xolox#lua#jumpfuncstart(a:forward)
+  endif
+  call xolox#lua#jumpblock(1)
 endfunction
 
 function! xolox#lua#tokeniscode() " {{{1
