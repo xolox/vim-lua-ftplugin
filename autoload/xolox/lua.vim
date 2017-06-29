@@ -472,7 +472,7 @@ function! xolox#lua#completedynamic(type) " {{{1
         if xolox#misc#option#get('lua_complete_omni', 0)
           return a:type . "\<C-x>\<C-o>"
         else
-          return a:type . "\<C-x>\<C-u>"
+          return a:type . "\<C-x>\<C-u>\<C-p>"
         endif
       endif
     endif
