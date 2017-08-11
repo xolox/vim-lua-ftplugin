@@ -94,6 +94,15 @@ if has('balloon_eval')
   call add(s:undo_ftplugin, 'setlocal ballooneval< balloonexpr<')
 endif
 
+" Autocommands {{{1
+" Automatic commands to check for syntax errors and/or undefined globals
+" and change Vim's "completeopt" setting on the fly for Lua buffers.
+augroup PluginFileTypeLua
+  autocmd!
+  autocmd WinEnter <buffer> call xolox#lua#tweakoptions()
+  autocmd BufWritePost <buffer> call xolox#lua#autocheck()
+augroup END
+
 " }}}1
 
 " Let Vim know how to disable the plug-in.
