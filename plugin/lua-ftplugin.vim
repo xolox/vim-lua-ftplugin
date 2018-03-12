@@ -29,14 +29,6 @@ endtry
 command! -bar LuaCheckSyntax call xolox#lua#checksyntax()
 command! -bar -bang LuaCheckGlobals call xolox#lua#checkglobals(<q-bang> == '!')
 
-" Automatic commands to check for syntax errors and/or undefined globals
-" and change Vim's "completeopt" setting on the fly for Lua buffers.
-augroup PluginFileTypeLua
-  autocmd!
-  autocmd WinEnter * call xolox#lua#tweakoptions()
-  autocmd BufWritePost * call xolox#lua#autocheck()
-augroup END
-
 " Make sure the plug-in is only loaded once.
 let g:loaded_lua_ftplugin = 1
 
