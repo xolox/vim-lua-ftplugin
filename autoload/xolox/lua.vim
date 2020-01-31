@@ -158,6 +158,7 @@ function! xolox#lua#help() " {{{1
       call s:lookupmethod(cword, 'lrv-file:', '\v<(close|flush|lines|read|seek|setvbuf|write)>')
       call s:lookupmethod(cword, '', '\v:\w+>')
       call s:lookuptopic('lrv-' . cword)
+      call s:lookuptopic('love-' . cword)
       call s:lookuptopic(cword)
       call s:lookuptopic('luarefvim.txt')
       help
